@@ -1,18 +1,17 @@
+// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Deepex'),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Deepex'),
+      ),
+      body: const Center(
+        child: Text('Welcome to Deepex!'),
       ),
     );
   }
