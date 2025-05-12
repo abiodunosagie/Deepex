@@ -1,6 +1,5 @@
 // lib/app.dart
 import 'package:deepex/constants/app_colors.dart';
-import 'package:deepex/constants/app_text.dart';
 import 'package:deepex/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -14,7 +13,7 @@ class App extends ConsumerWidget {
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: AppText.appName,
+      title: 'Deepex',
       theme: ThemeData(
         colorScheme: ColorScheme.light(
           primary: AppColors.primary,
@@ -42,7 +41,7 @@ class App extends ConsumerWidget {
       darkTheme: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.dark(
           primary: AppColors.primary,
-          secondary: AppColors.primary.withOpacity(0.8),
+          secondary: AppColors.primary,
         ),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.black12,
