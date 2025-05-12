@@ -1,69 +1,64 @@
 // lib/routing/app_router.dart
-import 'package:deepex/screens/data_screen.dart';
-import 'package:deepex/screens/electricity_screen.dart';
-import 'package:deepex/screens/gift_card_screen.dart';
-import 'package:deepex/screens/home_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../features/auth/login_screen.dart';
-import '../features/auth/register_screen.dart';
+import '../features/onboarding/onboarding_screen.dart';
 import '../providers/auth_provider.dart';
-import '../screens/airtime_screen.dart';
+// ... other imports
+
+// Create a simpler provider that's easier to debug
+final onboardingCompletedProvider = Provider<bool>((ref) {
+  // Default to false so new users always see onboarding
+  return false;
+});
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
   return GoRouter(
-    initialLocation: '/home',
+    initialLocation: '/onboarding', // Force initial location to onboarding
+    debugLogDiagnostics: true, // Add this to see routing logs in debug console
     redirect: (context, state) {
-      // If the user is not logged in and not on the login or register page,
-      // redirect to the login page
       final isLoggedIn = authState.isAuthenticated;
       final isLoggingIn = state.matchedLocation == '/login';
       final isRegistering = state.matchedLocation == '/register';
+      final isOnboarding = state.matchedLocation == '/onboarding';
 
-      if (!isLoggedIn && !isLoggingIn && !isRegistering) {
+      // Debug prints to understand routing flow
+      if (kDebugMode) {
+        print('Current path: ${state.matchedLocation}');
+        print('Auth state: ${authState.isAuthenticated}');
+      }
+
+      // *** SIMPLIFIED ROUTING LOGIC ***
+      // For testing purposes, always show onboarding first
+      // We'll implement the actual logic once onboarding is confirmed working
+
+      // Only redirect away from onboarding if user is logged in
+      if (isOnboarding && isLoggedIn) {
+        return '/home';
+      }
+
+      // If not on onboarding or login/register and not logged in, go to login
+      if (!isOnboarding && !isLoggingIn && !isRegistering && !isLoggedIn) {
         return '/login';
       }
 
-      // If the user is logged in and on the login or register page,
-      // redirect to the home page
+      // If logged in but on auth screens, go to home
       if (isLoggedIn && (isLoggingIn || isRegistering)) {
         return '/home';
       }
 
+      // Otherwise, don't redirect
       return null;
     },
     routes: [
       GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginScreen(),
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
-      GoRoute(
-        path: '/register',
-        builder: (context, state) => const RegisterScreen(),
-      ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => const HomeScreen(),
-      ),
-      GoRoute(
-        path: '/gift-card',
-        builder: (context, state) => const GiftCardScreen(),
-      ),
-      GoRoute(
-        path: '/airtime',
-        builder: (context, state) => const AirtimeScreen(),
-      ),
-      GoRoute(
-        path: '/data',
-        builder: (context, state) => const DataScreen(),
-      ),
-      GoRoute(
-        path: '/electricity',
-        builder: (context, state) => const ElectricityScreen(),
-      ),
+      // ... other routes
     ],
   );
 });
