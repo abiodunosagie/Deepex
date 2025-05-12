@@ -2,7 +2,8 @@
     <application
         android:label="deepex"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/deepex"
+        android:roundIcon="@mipmap/deepex">
         <activity
             android:name=".MainActivity"
             android:exported="true"

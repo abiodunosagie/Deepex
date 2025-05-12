@@ -42,7 +42,7 @@ dependencies:
   shared_preferences: ^2.5.3
   intl: ^0.20.2
   hooks_riverpod: ^2.6.1
-  connectivity_plus: ^6.1.4
+  connectivity_plus: ^5.0.2
 
 dev_dependencies:
   flutter_test:
@@ -54,9 +54,30 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+# Flutter Launcher Icons configuration
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo/deepex logo-dark.png"
+  adaptive_icon_background: "#121212" # Dark background color
+  adaptive_icon_foreground: "assets/logo/deepex logo-dark.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21 # Ensures proper adaptive icon support
+  adaptive_icon_padding: true # Adds proper padding to prevent stretching
+  # Configure specific icon sizes to prevent stretching
+  android_gravity: center # Center the icon in the adaptive background
+  ios_content_mode: scaleAspectFit # Ensures the image maintains aspect ratio on iOS
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: false
 
 # The following section is specific to Flutter packages.
 flutter:
@@ -67,7 +88,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - assets/logo/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
