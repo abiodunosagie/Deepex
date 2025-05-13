@@ -1,7 +1,8 @@
-// lib/screens/auth/register_screen.dart
+// Fixed register_screen.dart with prefix icons and improved contrast
 import 'package:deepex/components/button_base.dart';
 import 'package:deepex/components/custom_form_field.dart';
 import 'package:deepex/components/primary_button.dart';
+import 'package:deepex/constants/app_colors.dart';
 import 'package:deepex/providers/auth_provider.dart';
 import 'package:deepex/utilities/form_utils.dart';
 import 'package:deepex/utilities/snackbar_utils.dart';
@@ -102,6 +103,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     FocusScope.of(context).requestFocus(nextFocus);
   }
 
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isPasswordVisible = !_isPasswordVisible;
+    });
+  }
+
+  void _toggleConfirmPasswordVisibility() {
+    setState(() {
+      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+    });
+  }
+
   String? _validateConfirmPassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please confirm your password';
@@ -133,9 +146,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
   }
 
+  void _navigateToLogin() {
+    context.go('/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // Icon color based on theme
+    final iconColor = isDarkMode
+        ? AppColors.secondaryLight // Use bright cyan in dark mode
+        : AppColors.primary; // Use primary color in light mode
 
     return GestureDetector(
       // Dismiss keyboard when tapping outside of input fields
@@ -158,9 +181,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   Spacing.verticalS,
                   AppText.bodyLarge(
                     'Create an account to manage bills\nand gift cards.',
-                    color: Colors.grey,
+                    color: isDarkMode ? Colors.grey[300] : Colors.grey[600],
                   ),
                   Spacing.verticalXL,
+
+                  // First Name field with person icon
                   CustomFormField(
                     label: 'First Name',
                     hint: 'Enter your first name',
@@ -170,10 +195,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     validator: (value) =>
                         FormUtils.validateRequiredField(value, 'First name'),
                     textInputAction: TextInputAction.next,
+                    prefixIcon: Icon(Icons.person_outline, color: iconColor),
                     onSubmitted: (_) =>
                         _fieldFocusChange(_firstNameFocus, _lastNameFocus),
                   ),
                   Spacing.verticalM,
+
+                  // Last Name field with person icon
                   CustomFormField(
                     label: 'Last Name',
                     hint: 'Enter your last name',
@@ -183,10 +211,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     validator: (value) =>
                         FormUtils.validateRequiredField(value, 'Last name'),
                     textInputAction: TextInputAction.next,
+                    prefixIcon: Icon(Icons.person_outline, color: iconColor),
                     onSubmitted: (_) =>
                         _fieldFocusChange(_lastNameFocus, _emailFocus),
                   ),
                   Spacing.verticalM,
+
+                  // Email field with email icon
                   CustomFormField(
                     label: 'Email',
                     hint: 'Enter your email',
@@ -196,41 +227,67 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     inputType: InputFieldType.email,
                     validator: FormUtils.validateEmail,
                     textInputAction: TextInputAction.next,
+                    prefixIcon: Icon(Icons.email_outlined, color: iconColor),
                     onSubmitted: (_) =>
                         _fieldFocusChange(_emailFocus, _passwordFocus),
                   ),
                   Spacing.verticalM,
+
+                  // Password field with lock icon and visibility toggle
                   CustomFormField(
                     label: 'Password',
                     hint: 'Enter your password',
                     controller: _passwordController,
                     focusNode: _passwordFocus,
                     isRequired: true,
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible,
                     inputType: InputFieldType.password,
                     validator: FormUtils.validatePassword,
                     textInputAction: TextInputAction.next,
+                    prefixIcon: Icon(Icons.lock_outline, color: iconColor),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                      ),
+                      onPressed: _togglePasswordVisibility,
+                    ),
                     onSubmitted: (_) => _fieldFocusChange(
                         _passwordFocus, _confirmPasswordFocus),
                   ),
                   Spacing.verticalM,
+
+                  // Confirm Password field with lock icon and visibility toggle
                   CustomFormField(
                     label: 'Confirm Password',
                     hint: 'Confirm your password',
                     controller: _confirmPasswordController,
                     focusNode: _confirmPasswordFocus,
                     isRequired: true,
-                    obscureText: true,
+                    obscureText: !_isConfirmPasswordVisible,
                     inputType: InputFieldType.password,
                     validator: _validateConfirmPassword,
                     textInputAction: TextInputAction.done,
+                    prefixIcon: Icon(Icons.lock_outline, color: iconColor),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isConfirmPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                      ),
+                      onPressed: _toggleConfirmPasswordVisibility,
+                    ),
                     onSubmitted: (_) {
                       _confirmPasswordFocus.unfocus();
                       _register();
                     },
                   ),
                   Spacing.verticalXXL,
-                  // Using a regular button that handles the authState.isLoading
+
+                  // Create Account button
                   PrimaryButton(
                     size: ButtonSize.large,
                     text: 'Create Account',
@@ -238,16 +295,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     isLoading: authState.isLoading,
                   ),
                   Spacing.verticalSM,
-                  // Add login option
+
+                  // Login option
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       AppText.bodyMedium("Already have an account?"),
                       TextButton(
-                        onPressed: () => context.go('/login'),
+                        onPressed: _navigateToLogin,
                         child: AppText.bodyMedium(
                           "Login",
-                          color: Theme.of(context).primaryColor,
+                          // High contrast color in dark mode
+                          color: isDarkMode
+                              ? AppColors
+                                  .secondaryLight // Bright cyan in dark mode
+                              : AppColors.primary, // Primary blue in light mode
                           fontWeight: FontWeight.bold,
                         ),
                       ),

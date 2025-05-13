@@ -1,3 +1,4 @@
+// lib/components/primary_button.dart (updated with backgroundColor parameter)
 import 'package:deepex/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,7 @@ class PrimaryButton extends StatelessWidget {
   final IconData? leadingIcon;
   final IconData? trailingIcon;
   final ButtonSize size;
+  final Color? backgroundColor;
 
   const PrimaryButton({
     Key? key,
@@ -21,16 +23,18 @@ class PrimaryButton extends StatelessWidget {
     this.leadingIcon,
     this.trailingIcon,
     this.size = ButtonSize.medium,
+    this.backgroundColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final brightness = Theme.of(context).brightness;
+    final buttonColor = backgroundColor ?? AppColors.primary;
 
     return ButtonBase(
       text: text,
       onPressed: onPressed,
-      backgroundColor: AppColors.primary,
+      backgroundColor: buttonColor,
       textColor: Colors.white,
       isFullWidth: isFullWidth,
       isLoading: isLoading,

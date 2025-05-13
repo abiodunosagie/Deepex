@@ -1,7 +1,9 @@
+// Fixed login_screen.dart with improved icon contrast in dark mode
 import 'package:deepex/components/button_base.dart';
 import 'package:deepex/components/custom_form_field.dart';
 import 'package:deepex/components/primary_button.dart';
 import 'package:deepex/components/text_app_button.dart';
+import 'package:deepex/constants/app_colors.dart';
 import 'package:deepex/providers/auth_provider.dart';
 import 'package:deepex/utilities/form_utils.dart';
 import 'package:deepex/utilities/snackbar_utils.dart';
@@ -79,6 +81,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  void _navigateToRegister() {
+    context.go('/register');
+  }
+
   Future<void> _forgotPassword() async {
     // Navigate to forgot password screen or show dialog
     // For simplicity, we'll show a dialog here
@@ -126,6 +132,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    // Icon color based on theme
+    final iconColor = isDarkMode
+        ? AppColors.secondaryLight // Use bright cyan in dark mode
+        : AppColors.primary; // Use primary color in light mode
 
     return GestureDetector(
       // Dismiss keyboard when tapping outside
@@ -147,7 +159,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   AppText.bodyLarge(
                     "Let's pick up where you left off.",
-                    color: Colors.grey[600],
+                    color: isDarkMode ? Colors.grey[300] : Colors.grey[600],
                   ),
                   Spacing.verticalXXL,
 
@@ -161,26 +173,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     inputType: InputFieldType.email,
                     validator: FormUtils.validateEmail,
                     textInputAction: TextInputAction.next,
-                    prefixIcon:
-                        Icon(Icons.email_outlined, color: theme.primaryColor),
+                    prefixIcon: Icon(Icons.email_outlined, color: iconColor),
                     onSubmitted: (_) =>
                         _fieldFocusChange(_emailFocus, _passwordFocus),
                   ),
                   Spacing.verticalM,
 
-                  // Password field
+                  // Password field with fixed visibility toggle
                   CustomFormField(
                     label: 'Password',
                     hint: 'Enter your password',
                     controller: _passwordController,
                     focusNode: _passwordFocus,
                     isRequired: true,
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible,
                     inputType: InputFieldType.password,
                     validator: FormUtils.validatePassword,
-                    textInputAction: TextInputAction.next,
-                    onSubmitted: (_) =>
-                        _fieldFocusChange(_passwordFocus, _passwordFocus),
+                    textInputAction: TextInputAction.done,
+                    prefixIcon: Icon(Icons.lock_outline, color: iconColor),
+                    // Custom suffix icon to handle visibility toggle correctly
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                      ),
+                      onPressed: _togglePasswordVisibility,
+                    ),
+                    onSubmitted: (_) => _login(),
                   ),
                   Spacing.verticalS,
 
@@ -204,6 +225,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       TextAppButton(
                         text: 'Forgot Password?',
                         onPressed: _forgotPassword,
+                        textColor: isDarkMode
+                            ? AppColors
+                                .secondaryLight // Bright cyan in dark mode
+                            : AppColors.primary,
                       ),
                     ],
                   ),
@@ -223,10 +248,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     children: [
                       AppText.bodyMedium("Don't have an account?"),
                       TextButton(
-                        onPressed: () => context.go('/home'),
+                        onPressed: _navigateToRegister,
                         child: AppText.bodyMedium(
                           "Create Account",
-                          color: theme.primaryColor,
+                          // High contrast color in dark mode
+                          color: isDarkMode
+                              ? AppColors
+                                  .secondaryLight // Bright cyan in dark mode
+                              : theme.primaryColor,
+                          // Primary blue in light mode
                           fontWeight: FontWeight.bold,
                         ),
                       ),

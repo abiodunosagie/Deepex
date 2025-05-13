@@ -1,4 +1,4 @@
-// lib/components/custom_form_field.dart
+// Fixed CustomFormField.dart to handle password visibility better
 import 'package:deepex/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -53,7 +53,7 @@ class CustomFormField extends StatefulWidget {
   final Color? cursorColor;
 
   const CustomFormField({
-    Key? key,
+    super.key,
     required this.label,
     this.hint,
     this.helperText,
@@ -92,23 +92,28 @@ class CustomFormField extends StatefulWidget {
     this.labelColor,
     this.hintColor,
     this.cursorColor,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomFormField> createState() => _CustomFormFieldState();
 }
 
 class _CustomFormFieldState extends State<CustomFormField> {
-  bool _obscureText = false;
   late FocusNode _focusNode;
-  bool _hasFocus = false;
 
   @override
   void initState() {
     super.initState();
-    _obscureText = widget.obscureText;
+    // Important: Start with the widget's obscureText value
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(CustomFormField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update _obscureText if the widget's obscureText changed
+    if (oldWidget.obscureText != widget.obscureText) {}
   }
 
   @override
@@ -120,16 +125,18 @@ class _CustomFormFieldState extends State<CustomFormField> {
   }
 
   void _onFocusChange() {
-    setState(() {
-      _hasFocus = _focusNode.hasFocus;
-    });
+    setState(() {});
   }
 
+  // We're not using this as we'll let the parent component handle toggling
+  // This is commented out intentionally to avoid conflicts
+  /*
   void _toggleObscureText() {
     setState(() {
       _obscureText = !_obscureText;
     });
   }
+  */
 
   TextInputType _getKeyboardType() {
     switch (widget.inputType) {
@@ -163,22 +170,6 @@ class _CustomFormFieldState extends State<CustomFormField> {
     final defaultHintColor = isDarkMode ? Colors.grey[500]! : Colors.grey[500]!;
     final defaultCursorColor = AppColors.primary;
 
-    // Determine if we need a password toggle icon
-    Widget? passwordToggle = widget.inputType == InputFieldType.password
-        ? IconButton(
-            icon: Icon(
-              _obscureText ? Icons.visibility_off : Icons.visibility,
-              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-              size: 22,
-            ),
-            onPressed: _toggleObscureText,
-            splashRadius: 20,
-          )
-        : null;
-
-    // Create suffix icon with password toggle if needed
-    Widget? finalSuffixIcon = widget.suffixIcon ?? passwordToggle;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -210,9 +201,9 @@ class _CustomFormFieldState extends State<CustomFormField> {
           focusNode: _focusNode,
           readOnly: widget.readOnly,
           enabled: widget.enabled,
-          obscureText: widget.inputType == InputFieldType.password
-              ? _obscureText
-              : false,
+          // Use widget.obscureText directly rather than _obscureText
+          // This ensures the toggling from the parent is honored
+          obscureText: widget.obscureText,
           maxLength: widget.maxLength,
           maxLines: widget.inputType == InputFieldType.multiline
               ? widget.maxLines
@@ -243,7 +234,7 @@ class _CustomFormFieldState extends State<CustomFormField> {
             contentPadding: widget.contentPadding ??
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             prefixIcon: widget.prefixIcon,
-            suffixIcon: finalSuffixIcon,
+            suffixIcon: widget.suffixIcon,
             prefix: widget.prefix,
             suffix: widget.suffix,
             prefixIconConstraints: widget.prefixIconConstraints,

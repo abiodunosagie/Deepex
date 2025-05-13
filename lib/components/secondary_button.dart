@@ -1,3 +1,4 @@
+// lib/components/secondary_button.dart (updated with backgroundColor and textColor parameters)
 import 'package:flutter/material.dart';
 
 import 'button_base.dart';
@@ -10,6 +11,8 @@ class SecondaryButton extends StatelessWidget {
   final IconData? leadingIcon;
   final IconData? trailingIcon;
   final ButtonSize size;
+  final Color? backgroundColor;
+  final Color? textColor;
 
   const SecondaryButton({
     Key? key,
@@ -20,17 +23,24 @@ class SecondaryButton extends StatelessWidget {
     this.leadingIcon,
     this.trailingIcon,
     this.size = ButtonSize.medium,
+    this.backgroundColor,
+    this.textColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
+    // Default colors based on theme
+    final defaultBackgroundColor =
+        isDarkMode ? Colors.grey[800] : Colors.grey[200];
+    final defaultTextColor = isDarkMode ? Colors.white : Colors.black87;
+
     return ButtonBase(
       text: text,
       onPressed: onPressed,
-      backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-      textColor: isDarkMode ? Colors.white : Colors.black87,
+      backgroundColor: backgroundColor ?? defaultBackgroundColor,
+      textColor: textColor ?? defaultTextColor,
       isFullWidth: isFullWidth,
       isLoading: isLoading,
       leadingIcon: leadingIcon,

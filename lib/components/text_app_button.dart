@@ -1,3 +1,4 @@
+// lib/components/text_app_button.dart (updated with textColor parameter)
 import 'package:deepex/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
