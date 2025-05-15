@@ -30,7 +30,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       description:
           'Your platform for wallet management, bill payments and gift card redemptions.',
       isLottie: false,
-      lottieAnimationPath: 'assets/logo/deepex logo-light.png',
+      lottieAnimationPath: 'assets/logo/deepex logo-dark.png',
       // Light mode logo
       darkModeLottieAnimationPath:
           'assets/logo/deepex logo-light.png', // Dark mode logo
@@ -40,7 +40,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       description:
           'Settle utility bills, buy airtime, and handle payments, all in one place, anytime.',
       isLottie: true,
-      lottieAnimationPath: 'assets/animation/light/payment_light.json',
+      lottieAnimationPath: 'assets/animation/walkingdog.json',
       // Example light animation
       darkModeLottieAnimationPath:
           'assets/animation/paybillsdark.json', // Example dark animation
@@ -50,7 +50,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       description:
           'Quick redemptions with transparent rates and immediate processing.',
       isLottie: true,
-      lottieAnimationPath: 'assets/animation/light/giftcard_light.json',
+      lottieAnimationPath: 'assets/animation/giftcard.json',
       // Example light animation
       darkModeLottieAnimationPath:
           'assets/animation/cashdark.json', // Example dark animation
@@ -60,7 +60,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       description:
           "Built with bank-level encryption and protection for every transaction.",
       isLottie: true,
-      lottieAnimationPath: 'assets/animation/light/security_light.json',
+      lottieAnimationPath: 'assets/animation/security.json',
       // Example light animation
       darkModeLottieAnimationPath:
           'assets/animation/securitydark.json', // Example dark animation

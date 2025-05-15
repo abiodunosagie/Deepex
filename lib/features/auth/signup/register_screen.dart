@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../constants/app_text.dart';
-import '../../constants/spacing.dart';
+import '../../../constants/app_text.dart';
+import '../../../constants/spacing.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -27,6 +27,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _phoneNumberController = TextEditingController();
 
   // Focus nodes for each field
   final _firstNameFocus = FocusNode();
@@ -34,6 +35,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
   final _confirmPasswordFocus = FocusNode();
+  final _phoneNumberFocus = FocusNode();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
@@ -65,6 +67,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       }
     });
 
+    _phoneNumberFocus.addListener(() {
+      if (_phoneNumberFocus.hasFocus) {
+        debugPrint('Phone number field has focus');
+      }
+    });
+
     _passwordFocus.addListener(() {
       if (_passwordFocus.hasFocus) {
         debugPrint('Password field has focus');
@@ -84,6 +92,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
+    _phoneNumberController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
 
@@ -91,6 +100,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _firstNameFocus.dispose();
     _lastNameFocus.dispose();
     _emailFocus.dispose();
+    _passwordFocus.dispose();
     _passwordFocus.dispose();
     _confirmPasswordFocus.dispose();
 
@@ -230,6 +240,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     prefixIcon: Icon(Icons.email_outlined, color: iconColor),
                     onSubmitted: (_) =>
                         _fieldFocusChange(_emailFocus, _passwordFocus),
+                  ),
+                  Spacing.verticalM,
+                  CustomFormField(
+                    label: 'Phone Number',
+                    hint: 'Enter your phone number',
+                    controller: _phoneNumberController,
+                    focusNode: _phoneNumberFocus,
+                    isRequired: true,
+                    inputType: InputFieldType.phone,
+                    validator: FormUtils.validatePhoneNumber,
+                    textInputAction: TextInputAction.next,
+                    prefixIcon: Icon(Icons.phone_outlined, color: iconColor),
+                    onSubmitted: (_) =>
+                        _fieldFocusChange(_phoneNumberFocus, _passwordFocus),
                   ),
                   Spacing.verticalM,
 

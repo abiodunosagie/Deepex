@@ -1,6 +1,6 @@
 // lib/routing/app_router.dart
-import 'package:deepex/features/auth/login_screen.dart';
-import 'package:deepex/features/auth/register_screen.dart';
+import 'package:deepex/features/auth/login/login_screen.dart';
+import 'package:deepex/features/auth/signup/register_screen.dart';
 import 'package:deepex/features/onboarding/onboarding_screen.dart';
 import 'package:deepex/screens/home_screen.dart';
 import 'package:flutter/foundation.dart';

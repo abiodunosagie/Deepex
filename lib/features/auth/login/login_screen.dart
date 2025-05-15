@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../constants/app_text.dart';
-import '../../constants/spacing.dart';
+import '../../../constants/app_text.dart';
+import '../../../constants/spacing.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
