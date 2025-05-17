@@ -1,8 +1,9 @@
-// lib/screens/home_screen.dart
+// lib/screens/home_screen.dart - Updated
 import 'package:deepex/constants/app_colors.dart';
 import 'package:deepex/constants/app_text.dart';
 import 'package:deepex/constants/spacing.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 
 // Import our separated widgets
@@ -25,6 +26,12 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       hasNotifications = !hasNotifications;
     });
+  }
+
+  // Navigate to different sections in the app
+  void _navigateToSection(String route) {
+    // Use push to maintain navigation history
+    context.push(route);
   }
 
   @override
@@ -106,14 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // Wallet Balance Card
               WalletCard(
                 balance: '₦450,000.00',
-                onAddMoney: () {
-                  // Handle add money action
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Add Money button pressed'),
-                    ),
-                  );
-                },
+                onAddMoney: () => _navigateToSection('/add-money'),
               ),
 
               // Section title
@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Iconsax.card,
                     title: 'Gift Cards',
                     subtitle: 'Redeem & Sell',
-                    onTap: () {},
+                    onTap: () => _navigateToSection('/gift-cards'),
                     iconColor: isDarkMode
                         ? AppColors.giftCardLight
                         : AppColors.giftCard,
@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Iconsax.mobile,
                     title: 'Airtime',
                     subtitle: 'Recharge',
-                    onTap: () {},
+                    onTap: () => _navigateToSection('/airtime'),
                     iconColor:
                         isDarkMode ? AppColors.airtimeLight : AppColors.airtime,
                   ),
@@ -151,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Iconsax.wifi,
                     title: 'Data',
                     subtitle: 'Purchase Bundles',
-                    onTap: () {},
+                    onTap: () => _navigateToSection('/data'),
                     iconColor:
                         isDarkMode ? AppColors.dataLight : AppColors.data,
                   ),
@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Iconsax.flash_1,
                     title: 'Electricity',
                     subtitle: 'Pay Bills',
-                    onTap: () {},
+                    onTap: () => _navigateToSection('/electricity'),
                     iconColor: isDarkMode
                         ? AppColors.electricityLight
                         : AppColors.electricity,

@@ -1,3 +1,4 @@
+// lib/widgets/wallet_card.dart - Updated
 import 'package:deepex/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -186,10 +187,11 @@ class _WalletCardState extends State<WalletCard> {
 
                 const Spacer(),
 
-                // Add Money button - with theme-aware styling
+                // Add Money button - with GoRouter navigation
                 GestureDetector(
                   onTap: () {
-                    context.go('/add-money');
+                    // Using push to maintain navigation history
+                    context.push('/add-money');
                   },
                   child: Container(
                     height: 48,

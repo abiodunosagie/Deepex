@@ -3,7 +3,9 @@ import 'package:deepex/constants/app_text.dart';
 import 'package:deepex/constants/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:share_plus/share_plus.dart'; // lib/screens/add_money/add_money.dart (Updated)
 
 class AddMoneyScreen extends StatefulWidget {
   const AddMoneyScreen({super.key});
@@ -32,13 +34,106 @@ class _AddMoneyScreenState extends State<AddMoneyScreen> {
 
   // Method to share account details
   void _shareAccount() {
-    // Implementation for sharing account (would use share package)
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Sharing account details...'),
-        behavior: SnackBarBehavior.floating,
+    try {
+      final String shareText = "Deepex Account Details\n\n"
+          "Account Number: $accountNumber\n\n"
+          "Bank Name: Deepex Bank\n\n"
+          "Please use this account number to send money to my Deepex wallet.";
+
+      Share.share(shareText, subject: 'My Deepex Account Details')
+          .catchError((error) {
+        // Show fallback UI when sharing fails
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Sharing not available in this environment. Account number copied instead.'),
+            backgroundColor: AppColors.info,
+          ),
+        );
+        // Fall back to just copying to clipboard
+        Clipboard.setData(ClipboardData(text: shareText));
+      });
+    } catch (e) {
+      // Fallback for emulators or when sharing isn't available
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Sharing not available. Account details copied to clipboard instead.'),
+          backgroundColor: AppColors.info,
+        ),
+      );
+      // Copy to clipboard as fallback
+      Clipboard.setData(ClipboardData(text: accountNumber));
+
+      // For debugging - show custom bottom sheet in development
+      _showDebugShareSheet();
+    }
+  }
+
+  // Development only - show simulated share sheet
+  void _showDebugShareSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.backgroundDarkSecondary
+          : AppColors.backgroundLightSecondary,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Share Account Details',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              const SizedBox(height: 16),
+              const Text('This is a simulated share sheet for development.'),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildShareOption(Icons.message, 'SMS'),
+                  _buildShareOption(Icons.email, 'Email'),
+                  _buildShareOption(Icons.copy, 'Copy'),
+                  _buildShareOption(Icons.chat_bubble, 'WhatsApp'),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
+  }
+
+  Widget _buildShareOption(IconData icon, String label) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CircleAvatar(
+          backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+          radius: 25,
+          child: Icon(icon, color: isDarkMode ? Colors.white : Colors.black87),
+        ),
+        const SizedBox(height: 8),
+        Text(label, style: TextStyle(fontSize: 12)),
+      ],
+    );
+  }
+
+  // Navigate to card top-up screen
+  void _navigateToCardTopUp() {
+    context.push('/card-topup');
+  }
+
+  // Navigate to bank transfer screen
+  void _bankTransfer() {
+    context.push('/bank-transfer');
   }
 
   @override
@@ -55,18 +150,20 @@ class _AddMoneyScreenState extends State<AddMoneyScreen> {
           padding: const EdgeInsets.all(8.0),
           child: CircleAvatar(
             backgroundColor: isDarkMode
-                ? AppColors.backgroundDarkSecondary.withAlpha(150)
+                ? AppColors.backgroundDarkSecondary
+                    .withAlpha(153) // ~0.6 opacity
                 : AppColors.backgroundLightSecondary,
             child: IconButton(
-              icon: Icon(
-                Icons.arrow_back,
-                color: isDarkMode
-                    ? AppColors.textDarkPrimary
-                    : AppColors.textLightPrimary,
-                size: 20,
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: isDarkMode
+                      ? AppColors.textDarkPrimary
+                      : AppColors.textLightPrimary,
+                  size: 20,
+                ),
+                onPressed: () {
+                  context.pop();
+                }),
           ),
         ),
         title: Text(''),
@@ -93,11 +190,9 @@ class _AddMoneyScreenState extends State<AddMoneyScreen> {
                   context: context,
                   icon: Iconsax.bank,
                   iconBackgroundColor: AppColors.primary,
-                  title: 'Via bank details',
+                  title: 'Via bank transfer',
                   subtitle: 'Instant bank funding',
-                  onTap: () {
-                    // Handle bank details option
-                  },
+                  onTap: _bankTransfer,
                   isDarkMode: isDarkMode,
                 ),
 
@@ -192,16 +287,15 @@ class _AddMoneyScreenState extends State<AddMoneyScreen> {
 
                 Spacing.verticalXL,
 
-                // Card/Account Option
+                // Card/Account Option with updated onTap handler
                 _buildFundingOptionCard(
                   context: context,
                   icon: Iconsax.card,
                   iconBackgroundColor: AppColors.primary,
                   title: 'Top up with card/account',
                   subtitle: 'Add money from your card/account',
-                  onTap: () {
-                    // Handle card/account option
-                  },
+                  onTap: _navigateToCardTopUp,
+                  // Updated to navigate to the new screen
                   isDarkMode: isDarkMode,
                 ),
 
@@ -305,8 +399,8 @@ class _AddMoneyScreenState extends State<AddMoneyScreen> {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isDarkMode
-                ? Colors.grey.withAlpha(40)
-                : Colors.grey.withAlpha(30),
+                ? Colors.grey.withAlpha(41) // ~0.16 opacity
+                : Colors.grey.withAlpha(31), // ~0.12 opacity
             width: 1,
           ),
         ),
