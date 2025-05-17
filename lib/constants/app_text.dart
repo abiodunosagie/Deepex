@@ -59,7 +59,7 @@ class AppText extends StatelessWidget {
 
   const AppText(
     this.text, {
-    Key? key,
+    super.key,
     this.preset = TextPreset.bodyMedium,
     this.style,
     this.color,
@@ -70,12 +70,12 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  }) : super(key: key);
+  });
 
   // Named constructors for each text preset
   const AppText.displayLarge(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -85,12 +85,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.displayLarge,
-        super(key: key);
+  }) : preset = TextPreset.displayLarge;
 
   const AppText.displayMedium(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -100,12 +99,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.displayMedium,
-        super(key: key);
+  }) : preset = TextPreset.displayMedium;
 
   const AppText.displaySmall(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -115,12 +113,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.displaySmall,
-        super(key: key);
+  }) : preset = TextPreset.displaySmall;
 
   const AppText.headingLarge(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -130,12 +127,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.headingLarge,
-        super(key: key);
+  }) : preset = TextPreset.headingLarge;
 
   const AppText.headingMedium(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -145,12 +141,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.headingMedium,
-        super(key: key);
+  }) : preset = TextPreset.headingMedium;
 
   const AppText.headingSmall(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -160,12 +155,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.headingSmall,
-        super(key: key);
+  }) : preset = TextPreset.headingSmall;
 
   const AppText.titleLarge(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -175,12 +169,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.titleLarge,
-        super(key: key);
+  }) : preset = TextPreset.titleLarge;
 
   const AppText.titleMedium(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -190,12 +183,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.titleMedium,
-        super(key: key);
+  }) : preset = TextPreset.titleMedium;
 
   const AppText.titleSmall(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -205,12 +197,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.titleSmall,
-        super(key: key);
+  }) : preset = TextPreset.titleSmall;
 
   const AppText.bodyLarge(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -220,12 +211,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.bodyLarge,
-        super(key: key);
+  }) : preset = TextPreset.bodyLarge;
 
   const AppText.bodyMedium(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -235,12 +225,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.bodyMedium,
-        super(key: key);
+  }) : preset = TextPreset.bodyMedium;
 
   const AppText.bodySmall(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -250,12 +239,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.bodySmall,
-        super(key: key);
+  }) : preset = TextPreset.bodySmall;
 
   const AppText.labelLarge(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -265,12 +253,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.labelLarge,
-        super(key: key);
+  }) : preset = TextPreset.labelLarge;
 
   const AppText.labelMedium(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -280,12 +267,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.labelMedium,
-        super(key: key);
+  }) : preset = TextPreset.labelMedium;
 
   const AppText.labelSmall(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -295,12 +281,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.labelSmall,
-        super(key: key);
+  }) : preset = TextPreset.labelSmall;
 
   const AppText.caption(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -310,12 +295,11 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.caption,
-        super(key: key);
+  }) : preset = TextPreset.caption;
 
   const AppText.button(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.color,
     this.fontWeight,
@@ -325,8 +309,7 @@ class AppText extends StatelessWidget {
     this.softWrap,
     this.decoration,
     this.height,
-  })  : preset = TextPreset.button,
-        super(key: key);
+  }) : preset = TextPreset.button;
 
   @override
   Widget build(BuildContext context) {

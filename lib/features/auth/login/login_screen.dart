@@ -69,12 +69,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               _emailController.text.trim(),
               _passwordController.text,
             );
+
+        // Add this explicit navigation after successful login
+        if (mounted) {
+          context.go('/home');
+        }
+
         // If needed, save remember me preference
         if (_rememberMe) {
           // Save email to shared preferences for next time
-          // You'd implement this in your auth provider
         }
-        // No need to navigate, GoRouter will handle redirection
       } catch (e) {
         SnackBarUtils.showError(context, e.toString());
       }
@@ -85,47 +89,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     context.go('/register');
   }
 
-  Future<void> _forgotPassword() async {
-    // Navigate to forgot password screen or show dialog
-    // For simplicity, we'll show a dialog here
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: AppText.titleLarge('Reset Password'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppText.bodyMedium(
-              'Enter your email address to receive a password reset link.',
-            ),
-            Spacing.verticalM,
-            CustomFormField(
-              label: 'Email Address',
-              hint: 'Enter your email',
-              controller: TextEditingController(text: _emailController.text),
-              inputType: InputFieldType.email,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: AppText.button('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Implement password reset logic
-              Navigator.pop(context);
-              SnackBarUtils.showSuccess(
-                context,
-                'Password reset instructions sent to your email',
-              );
-            },
-            child: AppText.button('Send Reset Link', color: Colors.white),
-          ),
-        ],
-      ),
-    );
+  void _forgotPassword() {
+    // Navigate to the forgot password screen and pass the email if it's already entered
+    final email = _emailController.text.trim();
+    context.go('/forgot-password', extra: email.isNotEmpty ? email : null);
   }
 
   @override

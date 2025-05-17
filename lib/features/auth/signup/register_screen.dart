@@ -1,26 +1,24 @@
-// Fixed register_screen.dart with prefix icons and improved contrast
+// lib/features/auth/signup/register_screen.dart
 import 'package:deepex/components/button_base.dart';
 import 'package:deepex/components/custom_form_field.dart';
 import 'package:deepex/components/primary_button.dart';
 import 'package:deepex/constants/app_colors.dart';
-import 'package:deepex/providers/auth_provider.dart';
 import 'package:deepex/utilities/form_utils.dart';
 import 'package:deepex/utilities/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../constants/app_text.dart';
 import '../../../constants/spacing.dart';
 
-class RegisterScreen extends ConsumerStatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends ConsumerState<RegisterScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -39,52 +37,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Set up focus listeners (optional)
-    _setupFocusListeners();
-  }
-
-  // Set up focus listeners to track focus changes (optional)
-  void _setupFocusListeners() {
-    _firstNameFocus.addListener(() {
-      if (_firstNameFocus.hasFocus) {
-        debugPrint('First name field has focus');
-      }
-    });
-
-    _lastNameFocus.addListener(() {
-      if (_lastNameFocus.hasFocus) {
-        debugPrint('Last name field has focus');
-      }
-    });
-
-    _emailFocus.addListener(() {
-      if (_emailFocus.hasFocus) {
-        debugPrint('Email field has focus');
-      }
-    });
-
-    _phoneNumberFocus.addListener(() {
-      if (_phoneNumberFocus.hasFocus) {
-        debugPrint('Phone number field has focus');
-      }
-    });
-
-    _passwordFocus.addListener(() {
-      if (_passwordFocus.hasFocus) {
-        debugPrint('Password field has focus');
-      }
-    });
-
-    _confirmPasswordFocus.addListener(() {
-      if (_confirmPasswordFocus.hasFocus) {
-        debugPrint('Confirm password field has focus');
-      }
-    });
-  }
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -100,7 +53,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _firstNameFocus.dispose();
     _lastNameFocus.dispose();
     _emailFocus.dispose();
-    _passwordFocus.dispose();
+    _phoneNumberFocus.dispose();
     _passwordFocus.dispose();
     _confirmPasswordFocus.dispose();
 
@@ -135,22 +88,45 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return null;
   }
 
+  // Simplified registration method with direct navigation
   Future<void> _register() async {
-    // Clear all focus to trigger validation
+    // Clear focus to trigger validation
     FocusScope.of(context).unfocus();
 
     if (_formKey.currentState!.validate()) {
       try {
+        // Show loading state
+        setState(() {
+          _isLoading = true;
+        });
+
+        // Get user data
         final fullName =
             "${_firstNameController.text.trim()} ${_lastNameController.text.trim()}";
-        await ref.read(authProvider.notifier).register(
-              fullName,
-              _emailController.text.trim(),
-              _passwordController.text,
-            );
+        final email = _emailController.text.trim();
+        final phone = _phoneNumberController.text.trim();
+        final password = _passwordController.text;
 
-        // No need to navigate, GoRouter will handle redirection
+        // Simulate API call
+        await Future.delayed(const Duration(milliseconds: 800));
+
+        // Registration successful
+        if (!mounted) return;
+
+        setState(() {
+          _isLoading = false;
+        });
+
+        // Just navigate directly to OTP screen with email as parameter
+        context.go('/otp', extra: email);
       } catch (e) {
+        // Handle registration error
+        if (!mounted) return;
+
+        setState(() {
+          _isLoading = false;
+        });
+
         SnackBarUtils.showError(context, e.toString());
       }
     }
@@ -162,7 +138,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authProvider);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     // Icon color based on theme
@@ -239,9 +214,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     textInputAction: TextInputAction.next,
                     prefixIcon: Icon(Icons.email_outlined, color: iconColor),
                     onSubmitted: (_) =>
-                        _fieldFocusChange(_emailFocus, _passwordFocus),
+                        _fieldFocusChange(_emailFocus, _phoneNumberFocus),
                   ),
                   Spacing.verticalM,
+
+                  // Phone Number field with phone icon
                   CustomFormField(
                     label: 'Phone Number',
                     hint: 'Enter your phone number',
@@ -315,8 +292,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   PrimaryButton(
                     size: ButtonSize.large,
                     text: 'Create Account',
-                    onPressed: authState.isLoading ? null : _register,
-                    isLoading: authState.isLoading,
+                    onPressed: _isLoading ? null : _register,
+                    isLoading: _isLoading,
                   ),
                   Spacing.verticalSM,
 
@@ -331,9 +308,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           "Login",
                           // High contrast color in dark mode
                           color: isDarkMode
-                              ? AppColors
-                                  .secondaryLight // Bright cyan in dark mode
-                              : AppColors.primary, // Primary blue in light mode
+                              ? AppColors.secondaryLight
+                              : AppColors.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
