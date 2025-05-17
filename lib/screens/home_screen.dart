@@ -2,9 +2,12 @@
 import 'package:deepex/constants/app_colors.dart';
 import 'package:deepex/constants/app_text.dart';
 import 'package:deepex/constants/spacing.dart';
-import 'package:deepex/widgets/circle_pattern_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+
+// Import our separated widgets
+import '../components/notification_icon.dart';
+import '../widgets/wallet_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -171,161 +174,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Beautiful Wallet Card with Balance and Add Money Button
-class WalletCard extends StatelessWidget {
-  final String balance;
-  final VoidCallback? onAddMoney;
-
-  const WalletCard({
-    super.key,
-    required this.balance,
-    this.onAddMoney,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    // Define gradients for light and dark mode
-    final lightGradient = LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [
-        AppColors.primary,
-        Color(0xFF3267E9), // Slightly lighter shade
-      ],
-    );
-
-    final darkGradient = LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [
-        AppColors.primaryDark,
-        AppColors.primary.withOpacity(0.8),
-      ],
-    );
-
-    return Container(
-      width: double.infinity,
-      height: 200,
-      decoration: BoxDecoration(
-        gradient: isDarkMode ? darkGradient : lightGradient,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: isDarkMode
-                ? Colors.black.withOpacity(0.3)
-                : AppColors.primary.withOpacity(0.3),
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          // Background circuit pattern (subtle)
-          Positioned.fill(
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: CustomPaint(
-                  painter: CurvedLinePatternPainter(
-                    lineColor: Colors.white.withAlpha(20),
-                    strokeWidth: 1.2,
-                    lineCount: 5,
-                    amplitude: 15,
-                  ),
-                )),
-          ),
-
-          // Card content
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Wallet label
-                Row(
-                  children: [
-                    Icon(
-                      Iconsax.wallet_3,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      'Wallet Balance',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-
-                Spacing.verticalM,
-
-                // Balance amount
-                Text(
-                  balance,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-
-                const Spacer(),
-
-                // Add Money button
-                GestureDetector(
-                  onTap: onAddMoney,
-                  child: Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(width: 16),
-                        Icon(
-                          Iconsax.add,
-                          color: AppColors.primary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Add Money',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 // Action Card for Quick Actions
 class ActionCard extends StatelessWidget {
   final IconData icon;
@@ -335,13 +183,13 @@ class ActionCard extends StatelessWidget {
   final Color? iconColor;
 
   const ActionCard({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
     this.onTap,
     this.iconColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -358,8 +206,8 @@ class ActionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isDarkMode
-                ? Colors.grey.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.2),
+                ? Colors.grey.withAlpha(26) // 0.1 opacity
+                : Colors.grey.withAlpha(51), // 0.2 opacity
             width: 1,
           ),
         ),
@@ -396,60 +244,6 @@ class ActionCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-// Reusable notification icon component with theme support
-class NotificationIcon extends StatelessWidget {
-  final bool hasNotifications;
-  final VoidCallback? onPressed;
-  final double size;
-  final Color? color;
-
-  const NotificationIcon({
-    super.key,
-    required this.hasNotifications,
-    this.onPressed,
-    this.size = 28,
-    this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    return Stack(
-      children: [
-        IconButton(
-          onPressed: onPressed,
-          icon: Icon(
-            Iconsax.notification,
-            size: size,
-            color: color ??
-                (isDarkMode
-                    ? AppColors.textDarkPrimary
-                    : AppColors.textLightPrimary),
-          ),
-        ),
-        if (hasNotifications)
-          Positioned(
-            top: 11,
-            right: 12,
-            child: Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  width: 1.5,
-                ),
-              ),
-            ),
-          ),
-      ],
     );
   }
 }

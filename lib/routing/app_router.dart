@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../features/auth/forgot_password/forgot_password.dart';
+import '../screens/add_money/add_money.dart';
 
 // Simple router without complex redirects
 final routerProvider = Provider<GoRouter>((ref) {
@@ -51,6 +52,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/home',
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: '/add-money',
+        builder: (context, state) => const AddMoneyScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
