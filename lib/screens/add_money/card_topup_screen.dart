@@ -38,6 +38,16 @@ class _CardTopUpScreenState extends State<CardTopUpScreen>
   final _cvvFocus = FocusNode();
   final _amountFocus = FocusNode();
 
+  // First, let's add some necessary state variables to the _CardTopUpScreenState class
+  final _pinController = TextEditingController();
+  final List<String> _pin = ['', '', '', ''];
+  int _currentPinIndex = 0;
+  bool _isPinValid = false;
+  bool _isProcessingPin = false;
+
+  // This will be our PIN - in a real app, this would be securely stored/retrieved
+  final String _correctPin = '1234';
+
   // Card state
   String _cardType = 'default';
   Color _cardColor =
@@ -215,31 +225,446 @@ class _CardTopUpScreenState extends State<CardTopUpScreen>
 
     if (!_formKey.currentState!.validate()) return;
 
+    // Reset PIN data
+    _pin.fillRange(0, 4, '');
+    _currentPinIndex = 0;
+    _isPinValid = false;
+
+    // Show PIN entry bottom sheet
+    await _showPinEntryBottomSheet();
+  }
+
+  Future<void> _showPinEntryBottomSheet() async {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.7,
+              decoration: BoxDecoration(
+                color: isDarkMode
+                    ? AppColors.backgroundDarkElevated
+                    : Colors.white,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Handle bar
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Container(
+                      width: 40,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: isDarkMode ? Colors.grey[700] : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2.5),
+                      ),
+                    ),
+                  ),
+
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Iconsax.security,
+                          size: 48,
+                          color: isDarkMode
+                              ? AppColors.secondaryLight
+                              : AppColors.primary,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Enter PIN',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode
+                                ? AppColors.textDarkPrimary
+                                : AppColors.textLightPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Please enter your 4-digit PIN to confirm payment of ₦${_amount.toInt()}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: isDarkMode
+                                ? AppColors.textDarkSecondary
+                                : AppColors.textLightSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // PIN Input Display
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: List.generate(4, (index) {
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: _pin[index].isNotEmpty
+                                ? (isDarkMode
+                                    ? AppColors.primaryDark
+                                    : AppColors.primaryLight)
+                                : (isDarkMode
+                                    ? Colors.grey[800]
+                                    : Colors.grey[200]),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: _currentPinIndex == index
+                                  ? (isDarkMode
+                                      ? AppColors.secondaryLight
+                                      : AppColors.primary)
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
+                          ),
+                          child: Center(
+                            child: _pin[index].isNotEmpty
+                                ? Icon(
+                                    Icons.circle,
+                                    size: 24,
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.white,
+                                  )
+                                : null,
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // Error message if PIN is incorrect
+                  if (_isPinValid == false &&
+                      _currentPinIndex == 0 &&
+                      _pin.join('').isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Text(
+                        'Incorrect PIN. Please try again.',
+                        style: TextStyle(
+                          color: AppColors.error,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+
+                  // Loading indicator when processing PIN
+                  if (_isProcessingPin)
+                    Column(
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            isDarkMode
+                                ? AppColors.secondaryLight
+                                : AppColors.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Processing payment...',
+                          style: TextStyle(
+                            color: isDarkMode
+                                ? AppColors.textDarkSecondary
+                                : AppColors.textLightSecondary,
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    Expanded(
+                      child: _buildPinKeyboard(setState, isDarkMode),
+                    ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildPinKeyboard(StateSetter setModalState, bool isDarkMode) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          // Keyboard rows
+          ...List.generate(3, (rowIndex) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(3, (colIndex) {
+                final number = rowIndex * 3 + colIndex + 1;
+                return _buildKeyboardButton(
+                  '$number',
+                  setModalState,
+                  isDarkMode,
+                );
+              }),
+            );
+          }),
+
+          // Last row with 0 and backspace
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Empty space for balance
+              const SizedBox(width: 60, height: 60),
+
+              // 0 button
+              _buildKeyboardButton('0', setModalState, isDarkMode),
+
+              // Backspace button
+              GestureDetector(
+                onTap: () {
+                  setModalState(() {
+                    if (_currentPinIndex > 0) {
+                      _currentPinIndex--;
+                      _pin[_currentPinIndex] = '';
+                    }
+                  });
+                },
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Icon(
+                    Icons.backspace_outlined,
+                    color: isDarkMode
+                        ? AppColors.textDarkSecondary
+                        : AppColors.textLightSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildKeyboardButton(
+      String number, StateSetter setModalState, bool isDarkMode) {
+    return GestureDetector(
+      onTap: () {
+        setModalState(() {
+          if (_currentPinIndex < 4) {
+            _pin[_currentPinIndex] = number;
+            _currentPinIndex++;
+
+            // Check if PIN is complete
+            if (_currentPinIndex == 4) {
+              final enteredPin = _pin.join('');
+              _isProcessingPin = true;
+
+              // Simulate PIN verification with a delay
+              Future.delayed(const Duration(milliseconds: 800), () {
+                setModalState(() {
+                  _isProcessingPin = false;
+                  _isPinValid = enteredPin ==
+                      _correctPin; // In real app, validate securely
+
+                  if (_isPinValid) {
+                    // Close bottom sheet
+                    Navigator.pop(context);
+                    // Process payment and show success
+                    _processPaymentAfterPinValidation();
+                  } else {
+                    // Reset PIN for retry
+                    _pin.fillRange(0, 4, '');
+                    _currentPinIndex = 0;
+                  }
+                });
+              });
+            }
+          }
+        });
+      },
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Center(
+          child: Text(
+            number,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: isDarkMode
+                  ? AppColors.textDarkPrimary
+                  : AppColors.textLightPrimary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _processPaymentAfterPinValidation() async {
     setState(() {
       _isProcessing = true;
     });
 
     try {
       // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
 
-      if (mounted) {
-        // Success
-        Navigator.of(context).pop(true); // Return success to previous screen
-        SnackBarUtils.showSuccess(
-            context, 'Top-up of ₦${_amountController.text} successful!');
-      }
-    } catch (e) {
-      if (mounted) {
-        SnackBarUtils.showError(context, 'Transaction failed: ${e.toString()}');
-      }
-    } finally {
       if (mounted) {
         setState(() {
           _isProcessing = false;
         });
+
+        // Show success dialog
+        await _showSuccessDialog();
+
+        // Navigate to home screen
+        if (mounted) {
+          context.go('/home');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+        SnackBarUtils.showError(context, 'Transaction failed: ${e.toString()}');
       }
     }
+  }
+
+  Future<void> _showSuccessDialog() async {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            width: 300,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color:
+                  isDarkMode ? AppColors.backgroundDarkElevated : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Success animation
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: AppColors.successLight,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.check_circle,
+                      color: AppColors.success,
+                      size: 50,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Success message
+                Text(
+                  'Payment Successful!',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode
+                        ? AppColors.textDarkPrimary
+                        : AppColors.textLightPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                Text(
+                  'You have successfully added ₦${_amount.toInt()} to your Deepex wallet.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: isDarkMode
+                        ? AppColors.textDarkSecondary
+                        : AppColors.textLightSecondary,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Done button
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        isDarkMode ? AppColors.primaryLight : AppColors.primary,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Done',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // Build card front view
