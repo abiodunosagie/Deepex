@@ -208,6 +208,8 @@ class _GiftCardConfirmationScreenState
     final conversionRate = widget.redemptionData['conversionRate'] as double;
     final cardTypeName = widget.redemptionData['cardTypeName'] as String;
     final cardSubtype = widget.redemptionData['cardSubtype'] as String;
+    final currencyCode =
+        widget.redemptionData['currencyCode'] as String? ?? 'USD';
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -247,7 +249,7 @@ class _GiftCardConfirmationScreenState
           // USD amount row
           _buildInfoRow(
             label: 'Card Value',
-            value: '\$${amountUSD.toStringAsFixed(2)}',
+            value: '${currencyCode}${amountUSD.toStringAsFixed(2)}',
             icon: Iconsax.dollar_circle,
             isDarkMode: isDarkMode,
           ),
@@ -257,7 +259,7 @@ class _GiftCardConfirmationScreenState
           // Conversion rate row
           _buildInfoRow(
             label: 'Conversion Rate',
-            value: '₦$conversionRate / \$1',
+            value: '₦$conversionRate / ${currencyCode}1',
             icon: Iconsax.convert,
             isDarkMode: isDarkMode,
             valueColor: AppColors.info,

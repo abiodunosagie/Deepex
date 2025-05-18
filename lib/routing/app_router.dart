@@ -1,4 +1,4 @@
-// lib/routing/app_router.dart (updated)
+// lib/routing/app_router.dart
 import 'package:deepex/features/auth/forgot_password/forgot_password.dart';
 import 'package:deepex/features/auth/login/login_screen.dart';
 import 'package:deepex/features/auth/otp/otp_verification_screen.dart';
@@ -8,7 +8,6 @@ import 'package:deepex/screens/add_money/add_money.dart';
 import 'package:deepex/screens/add_money/bank_transfer_screen.dart';
 import 'package:deepex/screens/add_money/card_topup_screen.dart';
 import 'package:deepex/screens/gift_card/gift_card_redemption_screen.dart';
-import 'package:deepex/screens/gift_card/gift_card_success_screen.dart';
 import 'package:deepex/screens/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +18,7 @@ import '../models/data_plan_model.dart';
 import '../screens/airtime/airtime_purchase_screen.dart';
 import '../screens/data/data_purchase_screen.dart';
 import '../screens/data/data_success_screen.dart';
+import '../screens/gift_card/country_giftcards_screen.dart';
 import '../screens/gift_card/giftcard_confirmation_screen.dart';
 import '../screens/gift_card/giftcard_screen.dart';
 
@@ -34,11 +34,15 @@ class AppRoutes {
   static const String bankTransfer = '/bank-transfer';
   static const String cardTopup = '/card-topup';
   static const String giftCards = '/gift-cards';
+  static const String giftCardCountries = '/gift-cards/countries';
+  static const String giftCardList = '/gift-cards/list';
   static const String giftCardRedeem = '/gift-cards/redeem';
+  static const String giftCardRedeemCard = '/gift-cards/redeem-card';
   static const String giftCardConfirmation = '/gift-cards/confirmation';
   static const String giftCardSuccess = '/gift-cards/success';
   static const String airtime = '/airtime';
   static const String data = '/data';
+  static const String dataSuccess = '/data/success';
   static const String electricity = '/electricity';
   static const String offers = '/offers';
   static const String transactions = '/transactions';
@@ -123,9 +127,29 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const GiftCardsScreen(),
       ),
       GoRoute(
-        name: 'gift-card-redeem',
-        path: AppRoutes.giftCardRedeem,
-        builder: (context, state) => const GiftCardRedemptionScreen(),
+        name: 'gift-card-countries',
+        path: AppRoutes.giftCardCountries,
+        builder: (context, state) {
+          // Country data would be passed here
+          final country = state.extra as Map<String, dynamic>;
+          return CountryGiftCardsScreen(country: country);
+        },
+      ),
+      GoRoute(
+          name: 'gift-card-redeem',
+          path: AppRoutes.giftCardRedeem,
+          builder: (context, state) {
+            final redemptionData = state.extra as Map<String, dynamic>;
+            return GiftCardRedemptionScreen(redemptionData: redemptionData);
+          }),
+      GoRoute(
+        name: 'gift-card-redeem-card',
+        path: AppRoutes.giftCardRedeemCard,
+        builder: (context, state) {
+          // Get redemption data from state.extra
+          final redemptionData = state.extra as Map<String, dynamic>;
+          return GiftCardRedemptionScreen(redemptionData: redemptionData);
+        },
       ),
       GoRoute(
         name: 'gift-card-confirmation',
@@ -134,15 +158,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           // Get redemption data from state.extra
           final redemptionData = state.extra as Map<String, dynamic>;
           return GiftCardConfirmationScreen(redemptionData: redemptionData);
-        },
-      ),
-      GoRoute(
-        name: 'gift-card-success',
-        path: AppRoutes.giftCardSuccess,
-        builder: (context, state) {
-          // Get amount and card type from state.extra
-          final data = state.extra as Map<String, dynamic>;
-          return GiftCardSuccessScreen(data: data);
         },
       ),
 
@@ -197,7 +212,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         name: 'data-success',
-        path: '/data/success',
+        path: AppRoutes.dataSuccess,
         builder: (context, state) {
           // Get params from extra
           final Map<String, dynamic> data =

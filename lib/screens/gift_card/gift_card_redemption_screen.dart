@@ -16,7 +16,12 @@ import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 
 class GiftCardRedemptionScreen extends StatefulWidget {
-  const GiftCardRedemptionScreen({super.key});
+  final Map<String, dynamic>? redemptionData;
+
+  const GiftCardRedemptionScreen({
+    super.key,
+    this.redemptionData,
+  });
 
   @override
   State<GiftCardRedemptionScreen> createState() =>
@@ -43,6 +48,10 @@ class _GiftCardRedemptionScreenState extends State<GiftCardRedemptionScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? _cardImage;
   bool _isImageUploading = false;
+
+  // Country and card details from navigation (if available)
+  Map<String, dynamic>? _country;
+  Map<String, dynamic>? _preselectedCard;
 
   // Conversion rates (sample data)
   final Map<String, dynamic> _conversionRates = {
@@ -109,7 +118,36 @@ class _GiftCardRedemptionScreenState extends State<GiftCardRedemptionScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeFromRedemptionData();
     _amountController.addListener(_updateCalculatedAmount);
+  }
+
+  // Initialize screen if redemption data is provided
+  void _initializeFromRedemptionData() {
+    if (widget.redemptionData != null) {
+      // Extract data passed from the gift card list screen
+      _country = widget.redemptionData!['country'] as Map<String, dynamic>?;
+      _preselectedCard =
+          widget.redemptionData!['cardDetails'] as Map<String, dynamic>?;
+
+      if (_preselectedCard != null) {
+        // Set card type
+        final cardName = _preselectedCard!['name'] as String;
+        _selectedCardType = cardName.toLowerCase().replaceAll(' ', '_');
+
+        // Set card subtype (default to physical)
+        _cardSubtype = 'physical';
+
+        // Pre-fill amount field with minimum amount if provided
+        final minAmount = _preselectedCard!['minAmount'];
+        if (minAmount != null) {
+          _amountController.text = minAmount.toString();
+        }
+
+        // Update calculated amount
+        _updateCalculatedAmount();
+      }
+    }
   }
 
   @override
@@ -134,7 +172,18 @@ class _GiftCardRedemptionScreenState extends State<GiftCardRedemptionScreen> {
     if (_amountController.text.isNotEmpty) {
       try {
         final amount = double.parse(_amountController.text);
-        final rate = _conversionRates[_selectedCardType]['rates'][_cardSubtype];
+        double rate;
+
+        if (_preselectedCard != null && _country != null) {
+          // Use the country-specific rate
+          rate = _cardSubtype == 'physical'
+              ? _preselectedCard!['actualPhysicalRate']
+              : _preselectedCard!['actualDigitalRate'];
+        } else {
+          // Use the default rate
+          rate = _conversionRates[_selectedCardType]['rates'][_cardSubtype];
+        }
+
         setState(() {
           _calculatedAmount = amount * rate;
         });
@@ -316,19 +365,34 @@ class _GiftCardRedemptionScreenState extends State<GiftCardRedemptionScreen> {
       // Simulate API call delay
       await Future.delayed(const Duration(seconds: 1));
 
+      // Get rate based on selected card or preselected card
+      double rate;
+      String cardName;
+
+      if (_preselectedCard != null) {
+        rate = _cardSubtype == 'physical'
+            ? _preselectedCard!['actualPhysicalRate']
+            : _preselectedCard!['actualDigitalRate'];
+        cardName = _preselectedCard!['name'];
+      } else {
+        rate = _conversionRates[_selectedCardType]['rates'][_cardSubtype];
+        cardName = _conversionRates[_selectedCardType]['name'];
+      }
+
       // Create data to pass to confirmation screen
       final Map<String, dynamic> redemptionData = {
         'cardType': _selectedCardType,
-        'cardTypeName': _conversionRates[_selectedCardType]['name'],
+        'cardTypeName': cardName,
         'cardSubtype': _cardSubtype,
         'cardCode': _cardCodeController.text,
         'cardPin': _cardPinController.text,
         'amountUSD': double.parse(_amountController.text),
         'amountNGN': _calculatedAmount,
         'notes': _notesController.text,
-        'conversionRate': _conversionRates[_selectedCardType]['rates']
-            [_cardSubtype],
+        'conversionRate': rate,
+        'currencyCode': _currencyCode,
         'cardImage': _cardImage?.path,
+        'country': _country,
       };
 
       if (mounted) {
@@ -346,6 +410,14 @@ class _GiftCardRedemptionScreenState extends State<GiftCardRedemptionScreen> {
         SnackBarUtils.showError(context, 'An error occurred: $e');
       }
     }
+  }
+
+  // Get currency code from selected country or default to USD
+  String get _currencyCode {
+    if (_country != null) {
+      return _country!['currency'] as String;
+    }
+    return 'USD';
   }
 
   @override
@@ -377,7 +449,9 @@ class _GiftCardRedemptionScreenState extends State<GiftCardRedemptionScreen> {
           ),
         ),
         title: AppText.titleLarge(
-          'Gift Card Redemption',
+          _country != null
+              ? '${_country!["flag"]} ${_preselectedCard!["name"]} Gift Card'
+              : 'Gift Card Redemption',
           color: isDarkMode
               ? AppColors.textDarkPrimary
               : AppColors.textLightPrimary,
@@ -501,8 +575,8 @@ class _GiftCardRedemptionScreenState extends State<GiftCardRedemptionScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomFormField(
-                        label: 'Card Amount (USD)',
-                        hint: 'Enter amount in USD',
+                        label: 'Card Amount (${_currencyCode})',
+                        hint: 'Enter amount in ${_currencyCode}',
                         controller: _amountController,
                         focusNode: _amountFocus,
                         isRequired: true,
@@ -564,7 +638,7 @@ class _GiftCardRedemptionScreenState extends State<GiftCardRedemptionScreen> {
                                       ),
                                       TextSpan(
                                         text:
-                                            ' @ ₦${_conversionRates[_selectedCardType]['rates'][_cardSubtype]}/\$',
+                                            ' @ ₦${_preselectedCard != null ? (_cardSubtype == 'physical' ? _preselectedCard!['actualPhysicalRate'] : _preselectedCard!['actualDigitalRate']).toStringAsFixed(2) : _conversionRates[_selectedCardType]['rates'][_cardSubtype]}/${_currencyCode}',
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: isDarkMode
