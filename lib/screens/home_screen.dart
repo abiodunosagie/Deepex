@@ -162,8 +162,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   onAddMoney: () => _navigateToSection('/add-money'),
                 ),
               ),
-
+              Spacing.verticalXL,
               // Promotional Offers Section with ViewAll functionality
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AppText.headingMedium('Promotional Offers'),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'View all',
+                        style: TextStyle(
+                          color: isDarkMode
+                              ? AppColors.secondaryLight
+                              : AppColors.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               PromotionalOffers(
                   // onViewAll: () => _navigateToSection('/offers'),
                   ),
@@ -175,7 +197,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: AppText.headingMedium('Quick Actions'),
               ),
-
               // Action cards grid
               Padding(
                 padding: const EdgeInsets.all(20),

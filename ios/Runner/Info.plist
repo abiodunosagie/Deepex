@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
+	<key>NSCameraUsageDescription</key>
+    <string>This app needs camera access to scan gift cards and upload photos of gift cards</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs photos access to upload gift card images from your gallery</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>This app needs microphone access for basic functionality</string>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>

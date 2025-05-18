@@ -1,4 +1,4 @@
-// lib/routing/app_router.dart (updated with gift card routes)
+// lib/routing/app_router.dart (updated)
 import 'package:deepex/features/auth/forgot_password/forgot_password.dart';
 import 'package:deepex/features/auth/login/login_screen.dart';
 import 'package:deepex/features/auth/otp/otp_verification_screen.dart';
@@ -7,14 +7,17 @@ import 'package:deepex/features/onboarding/onboarding_screen.dart';
 import 'package:deepex/screens/add_money/add_money.dart';
 import 'package:deepex/screens/add_money/bank_transfer_screen.dart';
 import 'package:deepex/screens/add_money/card_topup_screen.dart';
-// Create these files in the proper directory:
-// lib/screens/gift_card/gift_card_redemption_screen.dart
-// lib/screens/gift_card/gift_card_success_screen.dart
+import 'package:deepex/screens/gift_card/gift_card_redemption_screen.dart';
+import 'package:deepex/screens/gift_card/gift_card_success_screen.dart';
 import 'package:deepex/screens/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../screens/airtime/airtime_purchase_screen.dart';
+import '../screens/gift_card/giftcard_confirmation_screen.dart';
+import '../screens/gift_card/giftcard_screen.dart';
 
 // Route names for easy reference
 class AppRoutes {
@@ -29,6 +32,7 @@ class AppRoutes {
   static const String cardTopup = '/card-topup';
   static const String giftCards = '/gift-cards';
   static const String giftCardRedeem = '/gift-cards/redeem';
+  static const String giftCardConfirmation = '/gift-cards/confirmation';
   static const String giftCardSuccess = '/gift-cards/success';
   static const String airtime = '/airtime';
   static const String data = '/data';
@@ -113,40 +117,38 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         name: 'gift-cards',
         path: AppRoutes.giftCards,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Gift Cards'),
+        builder: (context, state) => const GiftCardsScreen(),
       ),
       GoRoute(
         name: 'gift-card-redeem',
         path: AppRoutes.giftCardRedeem,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Gift Card Redemption'),
+        builder: (context, state) => const GiftCardRedemptionScreen(),
+      ),
+      GoRoute(
+        name: 'gift-card-confirmation',
+        path: AppRoutes.giftCardConfirmation,
+        builder: (context, state) {
+          // Get redemption data from state.extra
+          final redemptionData = state.extra as Map<String, dynamic>;
+          return GiftCardConfirmationScreen(redemptionData: redemptionData);
+        },
       ),
       GoRoute(
         name: 'gift-card-success',
         path: AppRoutes.giftCardSuccess,
         builder: (context, state) {
           // Get amount and card type from state.extra
-          final Map<String, dynamic> data =
-              state.extra as Map<String, dynamic>? ??
-                  {
-                    'amount': 0.0,
-                    'cardType': 'Unknown',
-                  };
-
-          return PlaceholderScreen(
-            title:
-                'Gift Card Success - ${data['cardType']} - ₦${data['amount']}',
-          );
+          final data = state.extra as Map<String, dynamic>;
+          return GiftCardSuccessScreen(data: data);
         },
       ),
 
       // Add placeholder routes for other sections
-      GoRoute(
-        name: 'airtime',
-        path: AppRoutes.airtime,
-        builder: (context, state) => const PlaceholderScreen(title: 'Airtime'),
-      ),
+      // GoRoute(
+      //   name: 'airtime',
+      //   path: AppRoutes.airtime,
+      //   builder: (context, state) => const PlaceholderScreen(title: 'Airtime'),
+      // ),
       GoRoute(
         name: 'data',
         path: AppRoutes.data,
@@ -189,6 +191,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.utilities,
         builder: (context, state) =>
             const PlaceholderScreen(title: 'Utilities'),
+      ),
+      GoRoute(
+        name: 'airtime',
+        path: AppRoutes.airtime,
+        builder: (context, state) => const AirtimePurchaseScreen(),
       ),
     ],
 

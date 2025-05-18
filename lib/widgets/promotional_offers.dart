@@ -88,7 +88,7 @@ class _PromotionalOffersState extends State<PromotionalOffers> {
     return Column(
       children: [
         SizedBox(
-          height: 180,
+          height: 160,
           child: PageView.builder(
             controller: _pageController,
             itemCount: _promotions.length,
