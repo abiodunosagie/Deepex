@@ -15,7 +15,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../models/data_plan_model.dart';
 import '../screens/airtime/airtime_purchase_screen.dart';
+import '../screens/data/data_purchase_screen.dart';
+import '../screens/data/data_success_screen.dart';
 import '../screens/gift_card/giftcard_confirmation_screen.dart';
 import '../screens/gift_card/giftcard_screen.dart';
 
@@ -144,16 +147,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // Add placeholder routes for other sections
-      // GoRoute(
-      //   name: 'airtime',
-      //   path: AppRoutes.airtime,
-      //   builder: (context, state) => const PlaceholderScreen(title: 'Airtime'),
-      // ),
-      GoRoute(
-        name: 'data',
-        path: AppRoutes.data,
-        builder: (context, state) => const PlaceholderScreen(title: 'Data'),
-      ),
       GoRoute(
         name: 'electricity',
         path: AppRoutes.electricity,
@@ -196,6 +189,35 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'airtime',
         path: AppRoutes.airtime,
         builder: (context, state) => const AirtimePurchaseScreen(),
+      ),
+      GoRoute(
+        name: 'data',
+        path: AppRoutes.data,
+        builder: (context, state) => const DataPurchaseScreen(),
+      ),
+      GoRoute(
+        name: 'data-success',
+        path: '/data/success',
+        builder: (context, state) {
+          // Get params from extra
+          final Map<String, dynamic> data =
+              state.extra as Map<String, dynamic>? ?? {};
+
+          return DataSuccessScreen(
+            provider: data['provider'] ?? 'unknown',
+            plan: data['plan'] as DataPlanModel? ??
+                DataPlanModel(
+                  id: 'unknown',
+                  provider: 'unknown',
+                  name: 'Unknown',
+                  description: 'Unknown plan',
+                  price: 0,
+                  duration: 'N/A',
+                  dataAmount: 'N/A',
+                ),
+            phoneNumber: data['phoneNumber'] ?? '0000000000',
+          );
+        },
       ),
     ],
 
