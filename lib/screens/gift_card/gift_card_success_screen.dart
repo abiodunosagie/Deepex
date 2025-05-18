@@ -1,4 +1,4 @@
-// lib/screens/home_screen.dart
+// lib/screens/home_screen.dart (updated with promotional offers)
 import 'package:deepex/constants/app_colors.dart';
 import 'package:deepex/constants/app_text.dart';
 import 'package:deepex/constants/spacing.dart';
@@ -7,11 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 
 // Import our widgets
-import '../components/notification_icon.dart';
-import '../models/transaction_model.dart';
-import '../widgets/promotional_offers.dart';
-import '../widgets/transaction_history.dart';
-import '../widgets/wallet_card.dart';
+import '../../components/notification_icon.dart';
+import '../../widgets/promotional_offers.dart';
+import '../../widgets/wallet_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,48 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
     // Use push to maintain navigation history
     context.push(route);
   }
-
-  final List<TransactionModel>? _transactions = [
-    TransactionModel(
-      id: '1',
-      type: TransactionType.debit,
-      amount: 1500.00,
-      description: 'MTN Airtime Recharge',
-      date: DateTime.now().subtract(const Duration(hours: 2)),
-      status: TransactionStatus.completed,
-      category: TransactionCategory.airtime,
-    ),
-    TransactionModel(
-      id: '2',
-      type: TransactionType.debit,
-      amount: 3750.00,
-      description: 'DSTV Subscription',
-      date: DateTime.now().subtract(const Duration(days: 1)),
-      status: TransactionStatus.completed,
-      category: TransactionCategory.utility,
-    ),
-    TransactionModel(
-      id: '3',
-      type: TransactionType.credit,
-      amount: 50000.00,
-      description: 'Bank Transfer',
-      date: DateTime.now().subtract(const Duration(days: 2)),
-      status: TransactionStatus.completed,
-      category: TransactionCategory.bankTransfer,
-    ),
-    TransactionModel(
-      id: '4',
-      type: TransactionType.debit,
-      amount: 2000.00,
-      description: 'Electricity Bill',
-      date: DateTime.now().subtract(const Duration(days: 3)),
-      status: TransactionStatus.pending,
-      category: TransactionCategory.electricity,
-    ),
-  ];
-
-  // Uncomment this line to see the empty state instead
-  // final List<TransactionModel>? _transactions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -163,10 +119,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              // Promotional Offers Section with ViewAll functionality
-              PromotionalOffers(
-                  // onViewAll: () => _navigateToSection('/offers'),
-                  ),
+              // Promotional Offers Section
+              const PromotionalOffers(),
 
               Spacing.verticalL,
 
@@ -222,30 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? AppColors.electricityLight
                           : AppColors.electricity,
                     ),
-                    // New Utilities box added
-                    ActionCard(
-                      icon: Iconsax.building_3,
-                      title: 'Utilities',
-                      subtitle: 'Water, TV & More',
-                      onTap: () => _navigateToSection('/utilities'),
-                      iconColor: isDarkMode
-                          ? const Color(
-                              0xFFB4A7D6) // Light purple for dark mode
-                          : const Color(
-                              0xFF674EA7), // Medium purple for light mode
-                    ),
                   ],
-                ),
-              ),
-
-              // Transaction History Section
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: TransactionHistorySection(
-                  transactions: _transactions,
-                  onViewAll: () => _navigateToSection('/transactions'),
-                  // Uncomment to show loading state
-                  // isLoading: true,
                 ),
               ),
             ],
@@ -288,10 +219,8 @@ class ActionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isDarkMode
-                ? Colors.grey
-                    .withOpacity(0.1) // Using withOpacity instead of withAlpha
-                : Colors.grey.withOpacity(0.2),
-            // Using withOpacity instead of withAlpha
+                ? Colors.grey.withAlpha(26) // 0.1 opacity
+                : Colors.grey.withAlpha(51), // 0.2 opacity
             width: 1,
           ),
         ),

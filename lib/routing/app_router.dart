@@ -1,4 +1,4 @@
-// lib/routing/app_router.dart - Updated with named routes
+// lib/routing/app_router.dart (updated with gift card routes)
 import 'package:deepex/features/auth/forgot_password/forgot_password.dart';
 import 'package:deepex/features/auth/login/login_screen.dart';
 import 'package:deepex/features/auth/otp/otp_verification_screen.dart';
@@ -7,6 +7,9 @@ import 'package:deepex/features/onboarding/onboarding_screen.dart';
 import 'package:deepex/screens/add_money/add_money.dart';
 import 'package:deepex/screens/add_money/bank_transfer_screen.dart';
 import 'package:deepex/screens/add_money/card_topup_screen.dart';
+// Create these files in the proper directory:
+// lib/screens/gift_card/gift_card_redemption_screen.dart
+// lib/screens/gift_card/gift_card_success_screen.dart
 import 'package:deepex/screens/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +28,15 @@ class AppRoutes {
   static const String bankTransfer = '/bank-transfer';
   static const String cardTopup = '/card-topup';
   static const String giftCards = '/gift-cards';
+  static const String giftCardRedeem = '/gift-cards/redeem';
+  static const String giftCardSuccess = '/gift-cards/success';
   static const String airtime = '/airtime';
   static const String data = '/data';
   static const String electricity = '/electricity';
+  static const String offers = '/offers';
+  static const String transactions = '/transactions';
+  static const String transactionDetails = '/transactions/details';
+  static const String utilities = '/utilities';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -100,13 +109,39 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CardTopUpScreen(),
       ),
 
-      // Add placeholder routes for other sections
+      // Gift Card Screens
       GoRoute(
         name: 'gift-cards',
         path: AppRoutes.giftCards,
         builder: (context, state) =>
             const PlaceholderScreen(title: 'Gift Cards'),
       ),
+      GoRoute(
+        name: 'gift-card-redeem',
+        path: AppRoutes.giftCardRedeem,
+        builder: (context, state) =>
+            const PlaceholderScreen(title: 'Gift Card Redemption'),
+      ),
+      GoRoute(
+        name: 'gift-card-success',
+        path: AppRoutes.giftCardSuccess,
+        builder: (context, state) {
+          // Get amount and card type from state.extra
+          final Map<String, dynamic> data =
+              state.extra as Map<String, dynamic>? ??
+                  {
+                    'amount': 0.0,
+                    'cardType': 'Unknown',
+                  };
+
+          return PlaceholderScreen(
+            title:
+                'Gift Card Success - ${data['cardType']} - ₦${data['amount']}',
+          );
+        },
+      ),
+
+      // Add placeholder routes for other sections
       GoRoute(
         name: 'airtime',
         path: AppRoutes.airtime,
@@ -122,6 +157,38 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.electricity,
         builder: (context, state) =>
             const PlaceholderScreen(title: 'Electricity'),
+      ),
+      GoRoute(
+        name: 'offers',
+        path: AppRoutes.offers,
+        builder: (context, state) =>
+            const PlaceholderScreen(title: 'All Offers'),
+      ),
+      GoRoute(
+        name: 'transactions',
+        path: AppRoutes.transactions,
+        builder: (context, state) =>
+            const PlaceholderScreen(title: 'Transactions'),
+      ),
+      GoRoute(
+        name: 'transaction-details',
+        path: AppRoutes.transactionDetails,
+        builder: (context, state) {
+          final Map<String, dynamic> data =
+              state.extra as Map<String, dynamic>? ??
+                  {
+                    'transactionId': 'Unknown',
+                  };
+
+          return PlaceholderScreen(
+              title: 'Transaction ${data['transactionId']}');
+        },
+      ),
+      GoRoute(
+        name: 'utilities',
+        path: AppRoutes.utilities,
+        builder: (context, state) =>
+            const PlaceholderScreen(title: 'Utilities'),
       ),
     ],
 
