@@ -1,4 +1,4 @@
-// lib/constants/app_colors.dart (Fixed for deprecation warnings)
+// lib/constants/app_colors.dart
 import 'package:flutter/material.dart';
 
 /// App color system for the Deepex application
@@ -59,6 +59,22 @@ class AppColors {
   static const Color backgroundDarkTertiary = Color(0xFF2C2C2C);
   static const Color backgroundDarkElevated = Color(0xFF303030);
 
+  /// Enhanced dark mode backgrounds (NEW)
+  static const Color backgroundDarkAmoled =
+      Color(0xFF000000); // True black for AMOLED screens
+  static const Color backgroundDarkDeep =
+      Color(0xFF0A0A0A); // Deep dark for immersive experiences
+  static const Color backgroundDarkSurface1 =
+      Color(0xFF1D1D1D); // Surface layer 1
+  static const Color backgroundDarkSurface2 =
+      Color(0xFF252525); // Surface layer 2
+  static const Color backgroundDarkSurface3 =
+      Color(0xFF323232); // Surface layer 3
+  static const Color backgroundDarkSurface4 =
+      Color(0xFF404040); // Surface layer 4
+  static const Color backgroundDarkFloating =
+      Color(0xFF383838); // For floating elements
+
   // =========================================================================
   // TEXT COLORS
   // =========================================================================
@@ -75,6 +91,13 @@ class AppColors {
   static const Color textDarkDisabled = Color(0xFF707070);
   static const Color textDarkInverse = Color(0xFF212121);
 
+  /// Enhanced dark mode text (NEW)
+  static const Color textDarkHighEmphasis = Color(0xFFFFFFFF); // 100% white
+  static const Color textDarkMediumEmphasis = Color(0xFFD8D8D8); // 85% white
+  static const Color textDarkLowEmphasis = Color(0xFFAAAAAA); // 67% white
+  static const Color textDarkPlaceholder =
+      Color(0xFF666666); // Subtle placeholder text
+
   // =========================================================================
   // BORDER COLORS
   // =========================================================================
@@ -86,6 +109,12 @@ class AppColors {
   /// Dark mode borders
   static const Color borderDark = Color(0xFF424242);
   static const Color borderDarkFocused = Color(0xFF3D73FF); // Primary Light
+
+  /// Enhanced dark mode borders (NEW)
+  static const Color borderDarkSubtle = Color(0xFF333333); // Subtle border
+  static const Color borderDarkStrong = Color(0xFF555555); // Strong border
+  static const Color borderDarkInput = Color(0xFF454545); // For input fields
+  static const Color borderDarkDivider = Color(0xFF2A2A2A); // For dividers
 
   // =========================================================================
   // STATUS COLORS
@@ -111,6 +140,24 @@ class AppColors {
   static const Color infoLight = Color(0xFFE3F2FD);
   static const Color infoDark = Color(0xFF1565C0);
 
+  /// Dark mode status colors (NEW)
+  static const Color successDarkMode =
+      Color(0xFF4CAF50); // Brighter for visibility
+  static const Color successDarkModeBackground =
+      Color(0xFF1B2A1C); // Dark green background
+  static const Color errorDarkMode =
+      Color(0xFFFF5252); // Brighter for visibility
+  static const Color errorDarkModeBackground =
+      Color(0xFF2C1B1B); // Dark red background
+  static const Color warningDarkMode =
+      Color(0xFFFFD54F); // Brighter for visibility
+  static const Color warningDarkModeBackground =
+      Color(0xFF2D2816); // Dark amber background
+  static const Color infoDarkMode =
+      Color(0xFF64B5F6); // Brighter for visibility
+  static const Color infoDarkModeBackground =
+      Color(0xFF1A2530); // Dark blue background
+
   // =========================================================================
   // FEATURE-SPECIFIC COLORS
   // =========================================================================
@@ -131,6 +178,18 @@ class AppColors {
   static const Color electricity = Color(0xFFFF6F00);
   static const Color electricityLight = Color(0xFFFFF3E0);
 
+  /// Dark mode feature colors (NEW)
+  static const Color giftCardDark = Color(0xFF9F80FF); // Brighter purple
+  static const Color giftCardDarkBackground =
+      Color(0xFF231C35); // Dark purple bg
+  static const Color airtimeDark = Color(0xFF66BB6A); // Brighter green
+  static const Color airtimeDarkBackground = Color(0xFF1C2A1E); // Dark green bg
+  static const Color dataDark = Color(0xFF29B6F6); // Brighter blue
+  static const Color dataDarkBackground = Color(0xFF1A2530); // Dark blue bg
+  static const Color electricityDark = Color(0xFFFFB74D); // Brighter orange
+  static const Color electricityDarkBackground =
+      Color(0xFF302519); // Dark orange bg
+
   // =========================================================================
   // UTILITY COLORS
   // =========================================================================
@@ -149,6 +208,33 @@ class AppColors {
   static const Color shimmerBaseDark = Color(0xFF3A3A3A);
   static const Color shimmerHighlightDark = Color(0xFF525252);
 
+  /// Enhanced dark mode utility colors (NEW)
+  static const Color scrimDark =
+      Color(0xE6000000); // 90% opacity for fullscreen scrims
+  static const Color shadowDark =
+      Color(0x4D000000); // For subtle shadows in dark mode
+  static const Color rippleDark =
+      Color(0x4DFFFFFF); // For touch feedback in dark mode
+  static const Color selectionDark =
+      Color(0x33004BF5); // Selection highlight in dark mode
+
+  // =========================================================================
+  // DARK MODE ACCENT MODIFIERS (NEW)
+  // =========================================================================
+
+  /// Dark mode accents (more vibrant for dark backgrounds)
+  static const Color accent1Dark = Color(0xFFFF7043); // Brighter vibrant orange
+  static const Color accent2Dark = Color(0xFFAB47BC); // Brighter purple
+  static const Color accent3Dark = Color(0xFF66BB6A); // Brighter green
+
+  /// Dark mode accent backgrounds
+  static const Color accent1DarkBackground =
+      Color(0xFF2C1910); // Dark orange background
+  static const Color accent2DarkBackground =
+      Color(0xFF27182E); // Dark purple background
+  static const Color accent3DarkBackground =
+      Color(0xFF1B2B1D); // Dark green background
+
   // =========================================================================
   // COLOR SCHEMES
   // =========================================================================
@@ -160,10 +246,12 @@ class AppColors {
     secondary: secondary,
     secondaryContainer: secondaryLightest,
     surface: backgroundLightElevated,
+    background: backgroundLight,
     error: error,
     onPrimary: Colors.white,
     onSecondary: textLightPrimary,
     onSurface: textLightPrimary,
+    onBackground: textLightPrimary,
     onError: Colors.white,
     brightness: Brightness.light,
   );
@@ -174,11 +262,13 @@ class AppColors {
     primaryContainer: primaryDark,
     secondary: secondaryLight,
     secondaryContainer: secondaryDarker,
-    surface: backgroundDarkElevated,
-    error: error,
+    surface: backgroundDarkSurface1,
+    background: backgroundDark,
+    error: errorDarkMode,
     onPrimary: Colors.white,
-    onSecondary: textDarkPrimary,
+    onSecondary: textDarkHighEmphasis,
     onSurface: textDarkPrimary,
+    onBackground: textDarkPrimary,
     onError: Colors.white,
     brightness: Brightness.dark,
   );
@@ -206,5 +296,45 @@ class AppColors {
     colors: [secondary, secondaryDarker],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
+  );
+
+  // =========================================================================
+  // DARK MODE SPECIFIC GRADIENTS (NEW)
+  // =========================================================================
+
+  /// Dark mode brand gradient (more subtle)
+  static const LinearGradient darkBrandGradient = LinearGradient(
+    colors: [primaryLight, Color(0xFF00D6D6)],
+    // Tweaked secondary for better contrast
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  /// Dark elevation gradient (creates subtle depth)
+  static const LinearGradient darkElevationGradient = LinearGradient(
+    colors: [backgroundDarkSurface1, backgroundDarkSurface2],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
+
+  /// Dark mode card gradient (for premium cards)
+  static const LinearGradient darkCardGradient = LinearGradient(
+    colors: [Color(0xFF202020), Color(0xFF303030)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  /// Dark mode deep gradient (for immersive experiences)
+  static const LinearGradient darkDeepGradient = LinearGradient(
+    colors: [Color(0xFF121212), Color(0xFF000000)],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
+
+  /// Dark mode accent gradient
+  static const LinearGradient darkAccentGradient = LinearGradient(
+    colors: [primaryLight, accent1Dark],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
   );
 }

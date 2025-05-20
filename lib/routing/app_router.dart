@@ -1,14 +1,19 @@
-// lib/routing/app_router.dart
+// lib/routing/app_router.dart (Updated)
 import 'package:deepex/features/auth/forgot_password/forgot_password.dart';
 import 'package:deepex/features/auth/login/login_screen.dart';
 import 'package:deepex/features/auth/otp/otp_verification_screen.dart';
 import 'package:deepex/features/auth/signup/register_screen.dart';
 import 'package:deepex/features/onboarding/onboarding_screen.dart';
+import 'package:deepex/navigation/main_scaffold.dart';
 import 'package:deepex/screens/add_money/add_money.dart';
 import 'package:deepex/screens/add_money/bank_transfer_screen.dart';
 import 'package:deepex/screens/add_money/card_topup_screen.dart';
 import 'package:deepex/screens/gift_card/gift_card_redemption_screen.dart';
 import 'package:deepex/screens/home_screen.dart';
+import 'package:deepex/screens/profile_screen.dart';
+import 'package:deepex/screens/support_screen.dart';
+import 'package:deepex/screens/transactions_screen.dart';
+import 'package:deepex/screens/utilities/transaction_failure_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +26,11 @@ import '../screens/data/data_success_screen.dart';
 import '../screens/gift_card/country_giftcards_screen.dart';
 import '../screens/gift_card/giftcard_confirmation_screen.dart';
 import '../screens/gift_card/giftcard_screen.dart';
+import '../screens/utilities/electricity_screen.dart';
+import '../screens/utilities/electricity_success_screen.dart';
+import '../screens/utilities/tv_cable_screen.dart';
+import '../screens/utilities/tv_success_screen.dart';
+import '../screens/utilities/utilities_screen.dart';
 
 // Route names for easy reference
 class AppRoutes {
@@ -30,6 +40,9 @@ class AppRoutes {
   static const String forgotPassword = '/forgot-password';
   static const String otp = '/otp';
   static const String home = '/home';
+  static const String profile = '/profile';
+  static const String transactions = '/transactions';
+  static const String support = '/support';
   static const String addMoney = '/add-money';
   static const String bankTransfer = '/bank-transfer';
   static const String cardTopup = '/card-topup';
@@ -43,11 +56,74 @@ class AppRoutes {
   static const String airtime = '/airtime';
   static const String data = '/data';
   static const String dataSuccess = '/data/success';
-  static const String electricity = '/electricity';
-  static const String offers = '/offers';
-  static const String transactions = '/transactions';
-  static const String transactionDetails = '/transactions/details';
+  static const String electricity = '/utilities/electricity';
+  static const String electricitySuccess = '/utilities/electricity/success';
+  static const String electricityFailure = '/utilities/electricity/failure';
   static const String utilities = '/utilities';
+
+  // Make the route paths consistent - changing from tvSubscription to tv for consistency
+  static const String tvSubscription = '/utilities/tv';
+  static const String tvSuccess = '/utilities/tv/success';
+  static const String tvFailure = '/utilities/tv/failure';
+
+  static const String offers = '/offers';
+  static const String transactionDetails = '/transactions/details';
+}
+
+// Helper to determine if a route is among the bottom navigation tabs
+int _getSelectedIndex(String location) {
+  if (location.startsWith('/home')) {
+    return 0;
+  } else if (location.startsWith('/transactions')) {
+    return 1;
+  } else if (location.startsWith('/profile')) {
+    return 2;
+  } else if (location.startsWith('/support')) {
+    return 3;
+  }
+  return 0; // Default to home tab
+}
+
+// Shell route branch
+ShellRoute _shellRoute() {
+  return ShellRoute(
+    builder: (context, state, child) {
+      return MainScaffold(
+        currentIndex: _getSelectedIndex(state.uri.toString()),
+        child: child,
+      );
+    },
+    routes: [
+      GoRoute(
+        name: 'home',
+        path: AppRoutes.home,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: HomeScreen(),
+        ),
+      ),
+      GoRoute(
+        name: 'transactions',
+        path: AppRoutes.transactions,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: TransactionsScreen(),
+        ),
+      ),
+      GoRoute(
+        name: 'profile',
+        path: AppRoutes.profile,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ProfileScreen(),
+        ),
+      ),
+      GoRoute(
+        name: 'support',
+        path: AppRoutes.support,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: SupportScreen(),
+        ),
+      ),
+    ],
+  );
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -96,12 +172,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Main app screens
-      GoRoute(
-        name: 'home',
-        path: AppRoutes.home,
-        builder: (context, state) => const HomeScreen(),
-      ),
+      // Main app shell with bottom navigation
+      _shellRoute(),
 
       // Money management screens
       GoRoute(
@@ -139,7 +211,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           name: 'gift-card-redeem',
           path: AppRoutes.giftCardRedeem,
           builder: (context, state) {
-            final redemptionData = state.extra as Map<String, dynamic>;
+            final redemptionData = state.extra as Map<String, dynamic>?;
             return GiftCardRedemptionScreen(redemptionData: redemptionData);
           }),
       GoRoute(
@@ -161,45 +233,103 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Add placeholder routes for other sections
-      GoRoute(
-        name: 'electricity',
-        path: AppRoutes.electricity,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Electricity'),
-      ),
-      GoRoute(
-        name: 'offers',
-        path: AppRoutes.offers,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'All Offers'),
-      ),
-      GoRoute(
-        name: 'transactions',
-        path: AppRoutes.transactions,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Transactions'),
-      ),
-      GoRoute(
-        name: 'transaction-details',
-        path: AppRoutes.transactionDetails,
-        builder: (context, state) {
-          final Map<String, dynamic> data =
-              state.extra as Map<String, dynamic>? ??
-                  {
-                    'transactionId': 'Unknown',
-                  };
-
-          return PlaceholderScreen(
-              title: 'Transaction ${data['transactionId']}');
-        },
-      ),
+      // Utilities screens
       GoRoute(
         name: 'utilities',
         path: AppRoutes.utilities,
-        builder: (context, state) =>
-            const PlaceholderScreen(title: 'Utilities'),
+        builder: (context, state) => const UtilitiesScreen(),
       ),
+
+      // TV Subscription screens - match name and path exactly
+      GoRoute(
+        name: 'tv',
+        path: AppRoutes.tvSubscription,
+        builder: (context, state) => const TvSubscriptionScreen(),
+      ),
+      GoRoute(
+        name: 'tv-success',
+        path: AppRoutes.tvSuccess,
+        builder: (context, state) {
+          try {
+            final Map<String, dynamic> data =
+                state.extra as Map<String, dynamic>? ?? {};
+
+            return TvSubscriptionSuccessScreen(
+              provider: data['provider'] ?? 'Unknown Provider',
+              smartCardNumber: data['smartCardNumber'] ?? '0000000000',
+              packageName: data['packageName'] ?? 'Unknown Package',
+              amount: data['amount'] ?? 0.0,
+              validityDays: data['validityDays'] ?? 30,
+            );
+          } catch (e) {
+            debugPrint('Error creating TvSubscriptionSuccessScreen: $e');
+            // Fallback for debugging
+            return Scaffold(
+              appBar: AppBar(title: const Text('Error')),
+              body: Center(child: Text('Error: $e')),
+            );
+          }
+        },
+      ),
+      GoRoute(
+        name: 'tv-failure',
+        path: AppRoutes.tvFailure,
+        builder: (context, state) {
+          final Map<String, dynamic> data =
+              state.extra as Map<String, dynamic>? ?? {};
+
+          return TransactionFailureScreen(
+            transactionType: 'TV subscription',
+            errorMessage: data['errorMessage'] ??
+                'An error occurred while processing your TV subscription',
+            transactionId: data['transactionId'] ??
+                DateTime.now().millisecondsSinceEpoch.toString().substring(5),
+            returnPath: data['returnPath'] ?? AppRoutes.tvSubscription,
+          );
+        },
+      ),
+
+      // Electricity screens
+      GoRoute(
+        name: 'electricity',
+        path: AppRoutes.electricity,
+        builder: (context, state) => const ElectricityScreen(),
+      ),
+      GoRoute(
+        name: 'electricity-success',
+        path: AppRoutes.electricitySuccess,
+        builder: (context, state) {
+          final Map<String, dynamic> data =
+              state.extra as Map<String, dynamic>? ?? {};
+
+          return ElectricitySuccessScreen(
+            provider: data['provider'] ?? 'Unknown Provider',
+            meterNumber: data['meterNumber'] ?? '0000000000',
+            meterType: data['meterType'] ?? 'Prepaid',
+            amount: data['amount'] ?? 0.0,
+            token: data['token'],
+          );
+        },
+      ),
+      GoRoute(
+        name: 'electricity-failure',
+        path: AppRoutes.electricityFailure,
+        builder: (context, state) {
+          final Map<String, dynamic> data =
+              state.extra as Map<String, dynamic>? ?? {};
+
+          return TransactionFailureScreen(
+            transactionType: 'electricity',
+            errorMessage: data['errorMessage'] ??
+                'An error occurred while processing your electricity payment',
+            transactionId: data['transactionId'] ??
+                DateTime.now().millisecondsSinceEpoch.toString().substring(5),
+            returnPath: data['returnPath'] ?? AppRoutes.electricity,
+          );
+        },
+      ),
+
+      // Airtime and Data screens
       GoRoute(
         name: 'airtime',
         path: AppRoutes.airtime,
@@ -234,9 +364,31 @@ final routerProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
+
+      // Other placeholder routes
+      GoRoute(
+        name: 'offers',
+        path: AppRoutes.offers,
+        builder: (context, state) =>
+            const PlaceholderScreen(title: 'All Offers'),
+      ),
+      GoRoute(
+        name: 'transaction-details',
+        path: AppRoutes.transactionDetails,
+        builder: (context, state) {
+          final Map<String, dynamic> data =
+              state.extra as Map<String, dynamic>? ??
+                  {
+                    'transactionId': 'Unknown',
+                  };
+
+          return PlaceholderScreen(
+              title: 'Transaction ${data['transactionId']}');
+        },
+      ),
     ],
 
-    // Error handling for invalid routes
+    // Error handling for invalid routes with more debugging info
     errorBuilder: (context, state) => Scaffold(
       body: Center(
         child: Column(
@@ -250,9 +402,20 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
             const SizedBox(height: 8),
             Text(
-              state.matchedLocation,
+              'Path: ${state.matchedLocation}',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
+            if (state.error != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Error: ${state.error}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: Colors.red),
+                ),
+              ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => context.goNamed('home'),

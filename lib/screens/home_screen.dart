@@ -234,15 +234,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       iconColor:
                           isDarkMode ? AppColors.dataLight : AppColors.data,
                     ),
-                    ActionCard(
-                      icon: Iconsax.flash_1,
-                      title: 'Electricity',
-                      subtitle: 'Pay Bills',
-                      onTap: () => _navigateToSection('/electricity'),
-                      iconColor: isDarkMode
-                          ? AppColors.electricityLight
-                          : AppColors.electricity,
-                    ),
                     // New Utilities box added
                     ActionCard(
                       icon: Iconsax.building_3,
