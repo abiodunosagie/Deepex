@@ -76,11 +76,11 @@ class _MainScaffoldState extends State<MainScaffold>
     // FIXED: Better contrast for unselected icons in dark mode
     final unselectedColor = isDarkMode
         ? AppColors.textDarkMediumEmphasis // Better visibility in dark mode
-        : Colors.black.withOpacity(0.6); // ~60% opacity
+        : Color.fromRGBO(0, 0, 0, 0.6); // ~60% opacity (replacing withOpacity)
 
     final shadowColor = isDarkMode
-        ? Colors.black.withOpacity(0.2) // ~20% opacity
-        : Colors.black.withOpacity(0.1); // ~10% opacity
+        ? Color.fromRGBO(0, 0, 0, 0.2) // ~20% opacity (replacing withOpacity)
+        : Color.fromRGBO(0, 0, 0, 0.1); // ~10% opacity (replacing withOpacity)
 
     return Scaffold(
       body: widget.child,
@@ -172,19 +172,44 @@ class _MainScaffoldState extends State<MainScaffold>
     required Color selectedColor,
     required Color unselectedColor,
   }) {
+    // Pre-calculate colors with transparency
+    final highlightColor = Color.fromRGBO(
+      selectedColor.red,
+      selectedColor.green,
+      selectedColor.blue,
+      0.1,
+    );
+
+    final splashColor = Color.fromRGBO(
+      selectedColor.red,
+      selectedColor.green,
+      selectedColor.blue,
+      0.2,
+    );
+
+    final containerColor = isSelected
+        ? Color.fromRGBO(
+            selectedColor.red,
+            selectedColor.green,
+            selectedColor.blue,
+            0.1,
+          )
+        : Colors.transparent;
+
     return InkWell(
       onTap: () => _onItemTapped(index, context),
       borderRadius: BorderRadius.circular(16),
-      highlightColor: selectedColor.withOpacity(0.1),
-      splashColor: selectedColor.withOpacity(0.2),
+      highlightColor: highlightColor,
+      // Using pre-calculated color
+      splashColor: splashColor,
+      // Using pre-calculated color
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color:
-              isSelected ? selectedColor.withOpacity(0.1) : Colors.transparent,
+          color: containerColor, // Using pre-calculated color
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

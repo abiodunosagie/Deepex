@@ -26,6 +26,8 @@ import '../screens/data/data_success_screen.dart';
 import '../screens/gift_card/country_giftcards_screen.dart';
 import '../screens/gift_card/giftcard_confirmation_screen.dart';
 import '../screens/gift_card/giftcard_screen.dart';
+import '../screens/notifications_screen.dart';
+import '../screens/security/security_settings.dart';
 import '../screens/utilities/electricity_screen.dart';
 import '../screens/utilities/electricity_success_screen.dart';
 import '../screens/utilities/tv_cable_screen.dart';
@@ -60,6 +62,8 @@ class AppRoutes {
   static const String electricitySuccess = '/utilities/electricity/success';
   static const String electricityFailure = '/utilities/electricity/failure';
   static const String utilities = '/utilities';
+  static const String securitySettings = '/security-settings';
+  static const String notifications = '/notifications';
 
   // Make the route paths consistent - changing from tvSubscription to tv for consistency
   static const String tvSubscription = '/utilities/tv';
@@ -89,8 +93,8 @@ ShellRoute _shellRoute() {
   return ShellRoute(
     builder: (context, state, child) {
       return MainScaffold(
-        currentIndex: _getSelectedIndex(state.uri.toString()),
         child: child,
+        currentIndex: _getSelectedIndex(state.uri.toString()),
       );
     },
     routes: [
@@ -385,6 +389,16 @@ final routerProvider = Provider<GoRouter>((ref) {
           return PlaceholderScreen(
               title: 'Transaction ${data['transactionId']}');
         },
+      ),
+      GoRoute(
+        name: 'security-settings',
+        path: '/security-settings',
+        builder: (context, state) => const SecuritySettingsScreen(),
+      ),
+      GoRoute(
+        name: 'notifications',
+        path: AppRoutes.notifications,
+        builder: (context, state) => const NotificationsScreen(),
       ),
     ],
 

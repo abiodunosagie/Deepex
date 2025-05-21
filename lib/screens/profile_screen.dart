@@ -2,8 +2,10 @@
 import 'package:deepex/constants/app_colors.dart';
 import 'package:deepex/constants/app_text.dart';
 import 'package:deepex/constants/spacing.dart';
+import 'package:deepex/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -671,6 +673,9 @@ class ProfileScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         _buildSettingItem(
+                          onTap: () {
+                            context.push(AppRoutes.securitySettings);
+                          },
                           context: context,
                           icon: Iconsax.security,
                           title: 'Security Settings',
@@ -680,6 +685,9 @@ class ProfileScreen extends StatelessWidget {
                           accentColor: accentColor,
                         ),
                         _buildSettingItem(
+                          onTap: () {
+                            context.push(AppRoutes.notifications);
+                          },
                           context: context,
                           icon: Iconsax.notification,
                           title: 'Notifications',
@@ -689,6 +697,7 @@ class ProfileScreen extends StatelessWidget {
                           accentColor: accentColor,
                         ),
                         _buildSettingItem(
+                          onTap: () {},
                           context: context,
                           icon: Iconsax.bank,
                           title: 'Payment Methods',
@@ -698,6 +707,7 @@ class ProfileScreen extends StatelessWidget {
                           accentColor: accentColor,
                         ),
                         _buildSettingItem(
+                          onTap: () {},
                           context: context,
                           icon: Iconsax.document,
                           title: 'Legal & Compliance',
@@ -1207,6 +1217,7 @@ class ProfileScreen extends StatelessWidget {
     required bool isDarkMode,
     required Color dividerColor,
     required Color accentColor,
+    required Function onTap,
     bool showDivider = true,
   }) {
     final textColor = isDarkMode
@@ -1219,9 +1230,7 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       children: [
         InkWell(
-          onTap: () {
-            // Handle setting item tap
-          },
+          onTap: () => onTap(),
           borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.all(16),
